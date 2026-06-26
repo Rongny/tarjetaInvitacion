@@ -489,14 +489,14 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
           <div className="relative mx-auto flex max-w-3xl flex-col items-center px-6 pt-36 pb-20 text-center sm:pt-40">
             <p className="font-display text-xs sm:text-sm tracking-[0.5em] uppercase text-primary/80">Mis Quince Años</p>
-            <div className="mt-6 mb-4">
-              <span className="font-script text-7xl sm:text-9xl text-primary leading-none">{event.host_name}</span>
+            <div className="mt-10 mb-8 py-3">
+              <span className="font-script text-6xl sm:text-[6rem] text-primary leading-[1.1] block">{event.host_name}</span>
             </div>
             <p className="font-serif italic text-base sm:text-lg text-muted-foreground max-w-md text-balance leading-relaxed">
               &ldquo;Hay momentos en la vida que merecen celebrarse en grande, y este es uno de ellos.&rdquo;
             </p>
             
-            <div className="flex items-center justify-center gap-3 text-primary/70 mt-8" aria-hidden="true">
+            <div className="flex items-center justify-center gap-3 text-primary/70 mt-14" aria-hidden="true">
               <span className="h-px w-16 bg-gradient-to-r from-transparent to-primary/40"></span>
               <StarOrnament />
               <span className="font-script text-2xl text-primary leading-none -mt-1">XV</span>
@@ -504,7 +504,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
               <span className="h-px w-16 bg-gradient-to-l from-transparent to-primary/40"></span>
             </div>
 
-            <div className="relative mt-10 w-full max-w-sm">
+            <div className="relative mt-16 w-full max-w-sm">
               <div className="absolute -inset-3 rounded-[2rem] border border-primary/30" aria-hidden="true"></div>
               <div className="absolute -inset-1 rounded-[1.6rem] border border-accent/40" aria-hidden="true"></div>
               <div className="relative aspect-[3/4] overflow-hidden rounded-[1.4rem] shadow-xl shadow-primary/20">
@@ -519,7 +519,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
               </div>
             </div>
 
-            <p className="mt-10 font-display text-2xl sm:text-3xl text-foreground tracking-wide">
+            <p className="mt-16 font-display text-2xl sm:text-3xl text-foreground tracking-wide">
               {capitalizedDay} <span className="text-primary">·</span> {formattedDate}
             </p>
           </div>

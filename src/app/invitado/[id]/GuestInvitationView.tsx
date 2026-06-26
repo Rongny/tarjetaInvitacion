@@ -905,7 +905,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
            ========================================================================== */}
       {showRsvpModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
-          <div className="w-full max-w-md bg-zinc-950/90 text-white rounded-[2rem] p-1.5 ring-1 ring-white/10 shadow-2xl">
+          <div className="w-full max-w-md bg-zinc-950/90 text-white rounded-[2rem] p-2.5 ring-1 ring-white/10 shadow-2xl">
             <div className="rounded-[calc(2rem-0.375rem)] bg-zinc-900/40 p-6 sm:p-8 flex flex-col relative">
               
               {/* Close Button */}
@@ -969,7 +969,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
                       <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                         Cantidad de cupos a utilizar (Máx. {guest.max_slots}):
                       </label>
-                      <div className="flex items-center justify-between bg-zinc-800/40 border border-zinc-700/50 rounded-xl p-2 mt-1">
+                      <div className="flex items-center justify-between bg-zinc-800/40 border border-zinc-700/50 rounded-xl p-2.5 mt-1">
                         <button
                           type="button"
                           className="w-10 h-10 flex items-center justify-center bg-zinc-700/40 hover:bg-zinc-700 text-white rounded-lg transition-colors font-bold text-lg"

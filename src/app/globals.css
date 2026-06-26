@@ -784,7 +784,7 @@ section:not(:last-child)::after {
   border: 1px solid rgba(var(--accent-rgb), 0.2);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
   border-radius: 12px;
-  padding: 16px 8px;
+  padding: 16px 10px;
   min-width: 70px;
 }
 

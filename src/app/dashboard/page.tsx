@@ -565,7 +565,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-12 gap-8 lg:gap-10">
 
           {/* Bento Cell 1: Attendance Analytics (col-span-12 lg:col-span-5) */}
-          <section className="col-span-12 lg:col-span-5 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
+          <section className="col-span-12 lg:col-span-5 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
             <div className="h-full rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-3.5 mb-8 border-b border-zinc-200/50 dark:border-white/5 pb-4">
@@ -626,7 +626,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Bento Cell 2: Event Details Config (col-span-12 lg:col-span-7) */}
-          <section className="col-span-12 lg:col-span-7 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
+          <section className="col-span-12 lg:col-span-7 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
             <div className="h-full rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40 flex flex-col justify-between">
               
               {!editingEvent ? (
@@ -860,7 +860,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Bento Cell 3: High Density Guest List (col-span-12) */}
-          <section className="col-span-12 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
+          <section className="col-span-12 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
             <div className="rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40">
               
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 mb-8 border-b border-zinc-200/50 dark:border-white/5 pb-6">
@@ -883,7 +883,7 @@ export default function DashboardPage() {
                     className="text-sm rounded-xl border-0 bg-white dark:bg-zinc-900 h-[48px] px-5 text-zinc-950 dark:text-white ring-1 ring-zinc-200 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none w-full sm:w-64 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm"
                   />
                   
-                  <div className="flex rounded-xl bg-white dark:bg-zinc-900 p-1.5 ring-1 ring-zinc-200 dark:ring-white/10 w-full sm:w-auto shadow-sm">
+                  <div className="flex rounded-xl bg-white dark:bg-zinc-900 p-2.5 ring-1 ring-zinc-200 dark:ring-white/10 w-full sm:w-auto shadow-sm">
                     {(['all', 'pending', 'confirmed', 'declined'] as const).map((st) => (
                       <button
                         key={st}
@@ -1052,7 +1052,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Bento Cell 4: Live RSVP Activity Feed (col-span-12) */}
-          <section className="col-span-12 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
+          <section className="col-span-12 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
             <div className="rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40">
               
               <div className="flex items-center gap-3.5 mb-6 border-b border-zinc-200/50 dark:border-white/5 pb-4">

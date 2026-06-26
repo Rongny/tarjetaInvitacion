@@ -1,90 +1,96 @@
-# Invitación Digital de XV Años - Melany (Interactiva)
+# Lacre RSVP - Plataforma SaaS de Invitaciones Premium
 
-Este proyecto es una invitación web premium interactiva para una celebración de 15 Años (Quinceañera). Cuenta con una pantalla de presentación (Intro Gate) que simula un sobre 3D cerrado con un sello de cera (lacre). Al hacer clic en el sello, este se rompe, la solapa del sobre se abre y la carta con los detalles iniciales emerge en 3D, revelando luego con una transición fluida el contenido completo de la invitación.
+Este proyecto ha sido migrado de una estructura estática (HTML/CSS/JS) a una aplicación moderna e interactiva utilizando **Next.js 16 (React 19)** y **Supabase** como backend en tiempo real, empaquetado bajo un modelo SaaS.
 
-## Características Principales
+## 🚀 Arquitectura del Proyecto
 
-1. **Apertura de Sobre Interactiva:** Sello de cera pulsante con animación 3D realista al romperse y solapa que gira con perspectiva física.
-2. **Personalización Dinámica (Sin Servidor):** Lee los datos del invitado directamente desde los parámetros de la URL para personalizar nombres, pases y género gramatical.
-3. **Música de Fondo:** Reproductor de audio integrado con botón flotante (Play/Pause) que se activa automáticamente al abrir el sobre.
-4. **Efecto de Lluvia de Pétalos:** Pétalos de flores (sakura/rosas) cayendo continuamente con variaciones aleatorias en tamaño y velocidad.
-5. **Cuenta Regresiva Activa:** Contador en tiempo real calculando días, horas, minutos y segundos para el evento.
-6. **Dress Code / Lluvia de Sobres / Álbum Compartido:** Secciones informativas detalladas con enlace dinámico para subir fotos a Google Fotos y código QR.
-7. **RSVP por WhatsApp:** Botón dinámico que pre-redacta un mensaje de confirmación para enviar directamente al organizador por WhatsApp.
+El sistema está construido con las siguientes tecnologías clave:
+- **Framework Frontend:** Next.js 16 (App Router, soporte nativo de Server & Client Components).
+- **Estilos:** Tailwind CSS v4 (compilado nativamente para rendimiento máximo).
+- **Base de Datos y Autenticación:** Supabase (PostgreSQL) con sincronización en tiempo real y seguridad mediante **Row Level Security (RLS)** a nivel de fila.
+- **Iconografía:** Phosphor Icons.
 
 ---
 
-## 🎨 Personalización de Colores (Temas)
+## 📁 Estructura del Directorio
 
-Para facilitar la personalización de la paleta de colores cuando el organizador defina el tema oficial, se han centralizado los colores como **variables CSS** al inicio del archivo `styles.css`.
-
-Para cambiar todo el esquema de color del sitio, abre [styles.css](file:///d:/Proyectos/tarjetaInvitacion/styles.css) y edita los valores dentro del bloque `:root`:
-
-```css
-:root {
-  /* Modifica estos valores hexadecimales o nombres de color */
-  --primary: #4a2a6b;         /* Color principal oscuro (botones, títulos importantes) */
-  --primary-rgb: 74, 42, 107; /* Mismo color en formato RGB (usado para transparencias) */
-  --secondary: #9964c4;       /* Color medio (cuerpo de tarjeta, detalles) */
-  --secondary-rgb: 153, 100, 196;
-  --accent: #bf8ce0;          /* Color claro de acento (bordes, fondos suaves) */
-  --accent-rgb: 191, 140, 224;
-  --accent-soft: #f4e8f9;     /* Fondo ultra-suave para cajas de texto */
-  --bg-main: #fbf7fb;         /* Fondo general de la página web */
-  --text-main: #2c1a3f;       /* Color del texto de lectura principal */
-  --text-muted: #6b5883;      /* Color para subtítulos y textos secundarios */
-  --gold: #d4b26f;            /* Color dorado para líneas decorativas y bordes elegantes */
-
-  /* Sello de cera (Lacre) */
-  --seal-base: #a10015;       /* Rojo/Bermellón base */
-  --seal-medium: #fa5d36;
-  --seal-highlight: #ffc9a0;
-}
+```bash
+tarjetaInvitacion/
+├── public/                 # Archivos estáticos y recursos multimedia
+│   └── hero-optimized.webp # Imagen principal optimizada para la invitación
+├── src/
+│   ├── app/                # Enrutamiento y vistas (App Router)
+│   │   ├── dashboard/      # Panel de control Bento Grid del organizador/cliente
+│   │   │   └── page.tsx    # CRUD de invitados, analíticas, edición de temas en tiempo real
+│   │   ├── invitado/       # Vista interactiva segura de la invitación dinámica
+│   │   │   └── [id]/       # Sub-ruta basada en UUID del invitado
+│   │   │       ├── page.tsx            # Fetch SSR de la invitación
+│   │   │       ├── CornerDecor.tsx     # Elementos florales decorativos SVG en GPU
+│   │   │       └── GuestInvitationView.tsx # Animación 3D del sobre, música y formulario RSVP
+│   │   ├── login/          # Página de inicio de sesión de clientes
+│   │   ├── register/       # Registro de nuevos organizadores/negocios
+│   │   ├── globals.css     # Estilos globales y hoja de animación de la invitación
+│   │   ├── layout.tsx      # Configuración de tipografías premium y metadatos
+│   │   └── page.tsx        # Landing page promocional de Lacre Platform
+│   └── lib/
+│       └── supabase.ts     # Cliente de inicialización de Supabase con fallback seguro
+└── supabase_schema.sql     # Esquema SQL completo listo para ejecutar en Supabase
 ```
 
 ---
 
-## 🔗 Estructura de Parámetros URL (Generar Enlaces)
+## 🗄️ Modelo de Base de Datos (`supabase_schema.sql`)
 
-El script lee tres parámetros clave de la URL para adaptar la invitación a cada persona:
+El backend en PostgreSQL organiza la información en tres capas principales:
 
-1. **`n` (Nombre del Invitado):** Nombre completo del invitado. Los guiones `-` o guiones bajos `_` se convertirán automáticamente en espacios y se capitalizarán.
-   * *Ejemplo:* `?n=shaidy-sierra` se convertirá en `Shaidy Sierra`.
-2. **`s` (Cupos / Pases):** Número de pases reservados para este invitado.
-   * *Ejemplo:* `?s=1` mostrará "Cupo Personal Reservado".
-   * *Ejemplo:* `?s=3` mostrará "Pase para 3 Personas".
-3. **`g` (Género):** Utilizado para la concordancia en español en los textos ("Querida/o" e "invitada/o").
-   * *Ejemplo:* `?g=f` (Femenino) -> "Querida Shaidy Sierra", "estás invitada".
-   * *Ejemplo:* `?g=m` (Masculino) -> "Querido Carlos Mendoza", "estás invitado".
-
-### Ejemplos de Enlaces Completos:
-* Para Shaidy Sierra (Femenino, 1 Pase):
-  `https://tu-invitacion.site/?n=shaidy-sierra&s=1&g=f`
-* Para Juan Carlos Pérez (Masculino, 4 Pases):
-  `https://tu-invitacion.site/?n=juan-carlos-perez&s=4&g=m`
+1. **Clients (Clientes):** Perfil de los organizadores de eventos enlazados directamente a `auth.users` de Supabase.
+   - Creación automatizada mediante el trigger database `on_auth_user_created` al registrarse.
+2. **Events (Eventos):** Configuración del evento del cliente (anfitrión, fecha, dirección, colores del tema, carpeta de fotos, música).
+   - Auto-aprovisionamiento automático de un evento de ejemplo por cliente en su primer ingreso al panel.
+3. **Guests (Invitados):** Lista de invitados vinculados a un evento. Cada uno posee un `id` único generado mediante un **UUID seguro**.
+   - Almacena el estado RSVP (`pending`, `confirmed`, `declined`), cupos reservados y pases utilizados.
 
 ---
 
-## 🛠️ Cómo Generar Enlaces Masivamente (Google Sheets)
+## 🔐 Seguridad en Tiempo Real (Row Level Security - RLS)
 
-Para enviar los enlaces personalizados por WhatsApp de forma masiva a tus invitados, puedes usar una hoja de cálculo con la siguiente fórmula:
-
-1. Crea las siguientes columnas:
-   * **A:** Nombre del invitado (ej. `Shaidy Sierra`)
-   * **B:** Cupos (ej. `1`)
-   * **C:** Género (`f` o `m`)
-   * **D:** URL Base (ej. `https://15anosmelany.site/`)
-2. En la columna **E** coloca la siguiente fórmula para generar el enlace personalizado automáticamente:
-   ```excel
-   =CONCATENAR(D2, "?n=", SUSTITUIR(MINUSC(A2), " ", "-"), "&s=", B2, "&g=", C2)
-   ```
-3. Copia la fórmula hacia abajo y ¡listo! Tendrás un enlace exclusivo para cada invitado en tu lista.
+Para garantizar la privacidad y robustez de los datos contra manipulación manual:
+- **Clients:** Solo el propietario de la cuenta puede leer y actualizar su perfil comercial.
+- **Events:** Acceso de lectura pública (requerido para desplegar la tarjeta al invitado). Acceso completo de escritura restringido a su respectivo `client_id`.
+- **Guests:** Lectura pública mediante UUID individual. Permiso de actualización controlado para la confirmación de asistencia, validando automáticamente que los pases confirmados no excedan los cupos máximos asignados.
 
 ---
 
-## 🚀 Despliegue (Hosting Gratuito)
+## ⚙️ Instalación y Desarrollo Local
 
-Al ser un sitio web estático (HTML, CSS y JS puro), puedes alojarlo gratis y en pocos minutos en:
-*   **GitHub Pages:** Crea un repositorio, sube los archivos y activa GitHub Pages en la sección *Settings > Pages*.
-*   **Netlify / Vercel:** Arrastra y suelta la carpeta del proyecto en sus plataformas de despliegue rápido.
-*   **Firebase Hosting:** Configura el CLI de Firebase y despliega usando `firebase deploy`.
+### 1. Clonar el repositorio e instalar dependencias
+```bash
+npm install
+```
+
+### 2. Configurar variables de entorno
+Crea un archivo `.env.local` en la raíz del proyecto y agrega tus claves del proyecto Supabase:
+```env
+NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
+```
+
+### 3. Iniciar el servidor de desarrollo
+```bash
+npm run dev
+```
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000).
+
+### 4. Compilación de producción
+```bash
+npm run build
+```
+
+---
+
+## 🎭 Características Visuales e Interactividad
+
+- **Intro Gate (Sobre 3D):** Animación en CSS 3D que simula un sobre premium con un sello lacre. Al romperse el sello con un clic del usuario, la carta con los datos emerge del bolsillo y se revela suavemente la invitación completa.
+- **Reproducción de Música:** Control flotante para música de fondo en MP3 que se activa con el consentimiento del usuario tras abrir el sobre.
+- **Lluvia de Pétalos:** Efecto continuo renderizado por GPU mediante manipulación del DOM con transformaciones matriciales 3D aleatorias.
+- **RSVP Integrado:** Formulario de respuesta directo a la base de datos Supabase con actualización en tiempo real mediante WebSockets en el panel del cliente, apoyado con un botón de respaldo para enviar la misma confirmación por WhatsApp.

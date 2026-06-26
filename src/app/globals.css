@@ -1,4 +1,49 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@source "../**/*.{ts,tsx}";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-display: 'Playfair Display', serif;
+  --font-script: 'Great Vibes', cursive;
+
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-card: #ffffff;
+  --color-muted-foreground: var(--text-muted);
+  --color-background: var(--bg-main);
+
+  --animate-float-slow: float-slow 4s ease-in-out infinite;
+  --animate-shimmer: shimmer 8s linear infinite;
+  --animate-butterfly: butterfly-float 7s ease-in-out infinite;
+  --animate-sway: sway 6s ease-in-out infinite;
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes shimmer {
+    0% { opacity: 0.3; transform: translate(-50%, -50%) rotate(0deg); }
+    50% { opacity: 0.6; transform: translate(-50%, -50%) rotate(180deg); }
+    100% { opacity: 0.3; transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  @keyframes butterfly-float {
+    0%, 100% { transform: translateY(0) translate(0) rotate(-4deg); }
+    25% { transform: translateY(-14px) translate(8px) rotate(2deg); }
+    50% { transform: translateY(-6px) translate(-6px) rotate(-2deg); }
+    75% { transform: translateY(-18px) translate(4px) rotate(4deg); }
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(0); }
+    50% { transform: rotate(2deg); }
+  }
+}
 
 :root {
   /* ==========================================================================
@@ -39,12 +84,18 @@
 }
 
 body {
-  font-family: var(--font-serif);
+  font-family: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-main);
   overflow-x: hidden;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+.lacre-invitation {
+  font-family: var(--font-serif);
+  background-color: var(--bg-main);
+  color: var(--text-main);
 }
 
 /* Dynamic Flower Petals Fall Container */
@@ -508,8 +559,6 @@ body {
   transform: translateY(30px) scale(0.98);
   transition: opacity 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   width: 100%;
-  max-width: 650px;
-  margin: 0 auto;
   padding: 0;
   display: none;
 }
@@ -1102,4 +1151,10 @@ section:not(:last-child)::after {
   section {
     padding: 60px 16px;
   }
+}
+
+
+/* NextJS global overrides */
+body {
+  font-family: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }

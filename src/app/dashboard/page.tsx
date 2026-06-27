@@ -910,8 +910,9 @@ export default function DashboardPage() {
               </div>
 
               {/* Inline Add Guest Form */}
-              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-12 gap-5 bg-zinc-100/50 dark:bg-zinc-950/40 rounded-2xl p-6 border border-zinc-200 dark:border-white/5 mb-8">
+              <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-12 gap-6 bg-zinc-100/50 dark:bg-zinc-950/40 rounded-2xl p-6 border border-zinc-200 dark:border-white/5 mb-8">
                 <div className="sm:col-span-4">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Nombre del Invitado</label>
                   <input
                     type="text"
                     required
@@ -922,6 +923,7 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Pases / Cupos</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -937,6 +939,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Categoría / Género</label>
                   <select
                     value={newGuestGender}
                     onChange={(e) => setNewGuestGender(e.target.value as 'm' | 'f' | 'n')}
@@ -948,6 +951,7 @@ export default function DashboardPage() {
                   </select>
                 </div>
                 <div className="sm:col-span-3">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Teléfono (WhatsApp)</label>
                   <input
                     type="tel"
                     value={newGuestPhone}
@@ -956,7 +960,8 @@ export default function DashboardPage() {
                     className="w-full text-sm h-[48px] rounded-xl border-0 bg-white dark:bg-zinc-900 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200 dark:ring-white/5 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono shadow-sm"
                   />
                 </div>
-                <div className="sm:col-span-1">
+                <div className="sm:col-span-1 flex flex-col justify-end">
+                  <label className="hidden sm:block text-[10px] font-bold uppercase tracking-wider text-transparent mb-1.5">&nbsp;</label>
                   <button
                     type="submit"
                     disabled={addingGuest}

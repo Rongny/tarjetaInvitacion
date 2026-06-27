@@ -504,142 +504,69 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-[#f8fafc] dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
+    <div className="min-h-screen w-full flex flex-col bg-[#f8fafc] dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
       
-      {/* ── Desktop Sidebar ────────────────────────────────────────────────── */}
-      <aside 
-        className="hidden lg:flex flex-col justify-between w-72 h-screen sticky top-0 p-8 shrink-0 shadow-xl border-r border-black/5 dark:border-white/5 transition-all duration-300"
-        style={{
-          background: `linear-gradient(180deg, ${event?.theme_colors?.primary || '#6366f1'} 0%, ${event?.theme_colors?.secondary || '#a855f7'} 100%)`
-        }}
-      >
-        <div className="flex flex-col gap-9">
-          {/* Logo / Branding */}
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-white shadow-inner">
-              <Globe size={24} weight="fill" />
-            </div>
-            <div>
-              <span className="font-extrabold tracking-tight text-white text-xl">Lacre</span>
-              <span className="text-[10px] ml-1.5 px-2 py-0.5 rounded-full bg-white/20 text-white font-bold uppercase tracking-wider">SaaS</span>
-            </div>
-          </div>
-
-          {/* Sidebar Menu */}
-          <nav className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl bg-white/15 text-white font-bold text-sm shadow-sm transition">
-              <UserList size={20} weight="fill" />
-              <span>Dashboard</span>
-            </div>
-            <a 
-              href="#guest-list" 
-              className="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-white/80 hover:bg-white/5 hover:text-white font-medium text-sm transition"
-            >
-              <Users size={20} />
-              <span>Invitados</span>
-            </a>
-            
-            {/* Quick Status Box */}
-            <div className="flex items-center gap-3 px-4.5 py-4 mt-8 rounded-2xl bg-black/10 border border-white/5 text-xs text-white/95 backdrop-blur-sm">
-              <MusicNotes size={20} className="text-white/70 shrink-0" />
-              <div className="overflow-hidden">
-                <p className="font-bold truncate">{event?.host_name || 'Anfitriona'}</p>
-                <p className="opacity-80 truncate text-[10px] mt-0.5">{event?.background_music_url ? 'Música activa' : 'Sin música'}</p>
+      {/* ── Top Header Navigation (No Sidebar) ───────────────────────────────── */}
+      <header className="sticky top-0 z-50 w-full border-b border-zinc-200/80 dark:border-white/5 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-20 items-center justify-between">
+            {/* Left Brand and Session Info */}
+            <div className="flex items-center gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-600/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 shadow-sm">
+                <Globe size={24} weight="duotone" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-extrabold tracking-tight text-zinc-950 dark:text-white text-lg">Lacre</span>
+                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider -mt-0.5">
+                  {clientProfile?.business_name || 'Panel de control'}
+                </span>
               </div>
             </div>
-          </nav>
-        </div>
 
-        {/* Sidebar Footer (Client Profile & Logout) */}
-        <div className="flex flex-col gap-4.5 border-t border-white/15 pt-6">
-          <div className="overflow-hidden">
-            <p className="text-xs font-bold text-white truncate">{clientProfile?.business_name || 'Mis Invitaciones'}</p>
-            <p className="text-[10px] text-white/60 font-mono truncate mt-0.5">{clientProfile?.email}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/10 py-3 text-xs font-bold transition duration-150 cursor-pointer shadow-sm w-full"
-          >
-            <SignOut size={16} />
-            <span>Cerrar Sesión</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* ── Right Content Area ──────────────────────────────────────────────── */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
-        
-        {/* Mobile Header / Responsive Navbar */}
-        <header className="lg:hidden sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-white/5 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md transition-colors duration-300">
-          <div className="px-6 py-4 flex items-center justify-between">
+            {/* Right Control Actions */}
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600/10 border border-purple-500/30 text-purple-600 dark:text-purple-400">
-                <Globe size={18} weight="duotone" />
-              </div>
-              <span className="font-extrabold tracking-tight text-zinc-950 dark:text-white text-base">Lacre</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Actualizar Button */}
+              {/* Sync Button */}
               <button
                 onClick={() => loadEventAndGuests(false)}
                 disabled={refreshing}
-                className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 transition cursor-pointer"
+                className="flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 px-4.5 py-2.5 text-xs font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 transition duration-150 cursor-pointer shadow-sm"
+                title="Sincronizar datos"
               >
-                <ArrowsClockwise size={16} className={refreshing ? 'animate-spin' : ''} />
+                <ArrowsClockwise size={14} className={refreshing ? 'animate-spin' : ''} />
+                <span className="hidden sm:inline">Sincronizar</span>
               </button>
-              {/* Theme toggle */}
+
+              {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 transition cursor-pointer"
+                className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-500 dark:text-zinc-400 cursor-pointer transition shadow-sm"
+                title="Cambiar tema"
               >
                 {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
               </button>
-              {/* Logout */}
+
+              {/* Separator */}
+              <span className="h-5 w-px bg-zinc-200 dark:bg-white/10" />
+
+              {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 transition cursor-pointer"
+                className="flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 px-4 py-2.5 text-xs font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 transition duration-150 cursor-pointer shadow-sm"
+                title="Cerrar sesión"
               >
                 <SignOut size={16} />
+                <span className="hidden sm:inline">Cerrar Sesión</span>
               </button>
             </div>
           </div>
-        </header>
-
-        {/* Top bar for Desktop */}
-        <div className="hidden lg:flex h-20 items-center justify-between px-10 border-b border-zinc-200/80 dark:border-white/5 bg-white/50 dark:bg-zinc-950/20 backdrop-blur-md shrink-0 transition-colors duration-300">
-          <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-zinc-800 dark:text-white">Panel de Control</h1>
-            <span className="h-4 w-px bg-zinc-300 dark:bg-zinc-800" />
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">Bienvenido al administrador de tus invitaciones</p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Sync */}
-            <button
-              onClick={() => loadEventAndGuests(false)}
-              disabled={refreshing}
-              className="flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 px-4.5 py-2 text-xs font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 transition duration-150 cursor-pointer shadow-sm"
-              title="Sincronizar datos"
-            >
-              <ArrowsClockwise size={14} className={refreshing ? 'animate-spin' : ''} />
-              <span>Sincronizar</span>
-            </button>
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-500 dark:text-zinc-400 cursor-pointer transition shadow-sm"
-            >
-              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-            </button>
-          </div>
         </div>
+      </header>
 
-        {/* Main Content Body */}
-        <main className="flex-1 overflow-y-auto p-6 sm:p-10 lg:p-12">
-          
-          {/* Bento Grid */}
-          <div className="grid grid-cols-12 gap-6 lg:gap-8 max-w-[1280px] mx-auto w-full">
+      {/* ── Main Layout Body (Centered Content) ───────────────────────────────── */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        
+        {/* Bento Grid */}
+        <div className="grid grid-cols-12 gap-6 lg:gap-8">
 
             {/* Bento Cell 1: Attendance Analytics */}
             <section className="col-span-12 lg:col-span-5 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/5 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between min-h-[480px] transition-colors duration-300">
@@ -1192,6 +1119,5 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
-  </div>
-);
+  );
 }

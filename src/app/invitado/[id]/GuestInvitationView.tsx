@@ -912,7 +912,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         </section>
 
         {/* ── Section 9: FINAL FOOTER SECTION ───────────────────────────────── */}
-        <section className="relative overflow-hidden bg-secondary/30" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+        <section className="relative overflow-hidden" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
           <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
           <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
 

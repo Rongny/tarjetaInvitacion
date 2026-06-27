@@ -50,6 +50,7 @@ interface GuestData {
   attending_count: number;
   guest_message: string;
   updated_at: string;
+  slug?: string | null;
 }
 
 interface ActivityLog {
@@ -339,12 +340,25 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
+  const generateSlug = (name: string): string => {
+    const baseSlug = name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // remove accents
+      .replace(/[^a-z0-9\s-]/g, '') // remove non-alphanumeric chars
+      .trim()
+      .replace(/\s+/g, '-'); // replace spaces with hyphens
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    return `${baseSlug}-${randomSuffix}`;
+  };
+
   const handleAddGuest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGuestName.trim() || !event) return;
 
     setAddingGuest(true);
     try {
+      const slug = generateSlug(newGuestName.trim());
       const { data, error } = await supabase
         .from('guests')
         .insert({
@@ -354,7 +368,8 @@ export default function DashboardPage() {
           gender: newGuestGender,
           phone_number: newGuestPhone.trim() || null,
           rsvp_status: 'pending',
-          attending_count: 0
+          attending_count: 0,
+          slug
         })
         .select()
         .single();
@@ -436,8 +451,8 @@ export default function DashboardPage() {
     }
   };
 
-  const copyInviteLink = (id: string) => {
-    const inviteUrl = `${originUrl}/invitado/${id}`;
+  const copyInviteLink = (slug: string | null | undefined, id: string) => {
+    const inviteUrl = `${originUrl}/invitado/${slug || id}`;
     navigator.clipboard.writeText(inviteUrl).then(() => {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
@@ -445,7 +460,7 @@ export default function DashboardPage() {
   };
 
   const copyAllLinks = () => {
-    const textList = filteredGuests.map(g => `${g.name}: ${originUrl}/invitado/${g.id}`).join('\n');
+    const textList = filteredGuests.map(g => `${g.name}: ${originUrl}/invitado/${g.slug || g.id}`).join('\n');
     navigator.clipboard.writeText(textList).then(() => {
       alert('Todos los enlaces filtrados han sido copiados al portapapeles.');
     });
@@ -927,7 +942,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="py-4 px-5 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <button onClick={() => copyInviteLink(g.id)}
+                            <button onClick={() => copyInviteLink(g.slug, g.id)}
                               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer active:scale-[0.97] ${
                                 copiedId === g.id
                                   ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-500/30'

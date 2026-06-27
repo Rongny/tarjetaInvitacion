@@ -119,10 +119,8 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
         {/* Top Branding */}
-        <div className="relative flex items-center gap-3.5 z-10">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-purple-300">
-            <ShieldCheck size={24} weight="duotone" />
-          </div>
+        <div className="relative flex items-center gap-2.5 z-10">
+          <img src="/logo-white.png" alt="Lacre Logo" className="h-8 w-auto" />
           <span className="font-bold tracking-wider uppercase text-xs text-zinc-400 font-sans">Lacre SaaS Platform</span>
         </div>
 
@@ -170,6 +168,11 @@ export default function LoginPage() {
           
           {/* Header */}
           <div className="text-center">
+            {/* Mobile Logo */}
+            <div className="flex md:hidden justify-center mb-6">
+              <img src="/logo.png" alt="Lacre Logo" className="h-12 w-auto dark:hidden" />
+              <img src="/logo-white.png" alt="Lacre Logo" className="h-12 w-auto hidden dark:block" />
+            </div>
             <h1 className="text-5xl font-black text-zinc-950 dark:text-white tracking-tight mb-3 font-sans">
               ¡Bienvenido!
             </h1>

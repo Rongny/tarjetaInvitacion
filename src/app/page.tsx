@@ -41,10 +41,9 @@ export default function HomePage() {
 
       {/* Header / Nav */}
       <header className="w-full max-w-7xl px-6 py-6 flex items-center justify-between z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-600/10 border border-purple-500/30 text-purple-600 dark:text-purple-400">
-            <EnvelopeSimple size={20} weight="duotone" />
-          </div>
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Lacre Logo" className="h-8 w-auto dark:hidden" />
+          <img src="/logo-white.png" alt="Lacre Logo" className="h-8 w-auto hidden dark:block" />
           <span className="font-bold tracking-tight text-zinc-950 dark:text-white text-lg">Lacre</span>
         </div>
         <div className="flex items-center gap-4">

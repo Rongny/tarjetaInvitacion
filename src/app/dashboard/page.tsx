@@ -598,10 +598,9 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-50 w-full border-b border-slate-200/70 dark:border-white/5 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md transition-colors duration-300">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 text-white shadow-sm shadow-violet-500/30">
-                <Globe size={16} weight="fill" />
-              </div>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Lacre Logo" className="h-8 w-auto dark:hidden" />
+              <img src="/logo-white.png" alt="Lacre Logo" className="h-8 w-auto hidden dark:block" />
               <div className="flex flex-col leading-none">
                 <span className="font-extrabold tracking-tight text-zinc-950 dark:text-white text-sm">Lacre</span>
                 <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider mt-0.5">

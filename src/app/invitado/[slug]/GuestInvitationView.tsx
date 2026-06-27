@@ -496,10 +496,10 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(var(--secondary-rgb), 0.5), rgba(var(--secondary-rgb), 0.08), var(--bg-main))' }} aria-hidden="true"></div>
 
           {/* Corner flowers */}
-          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(1, 1)' }} />
-          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, 1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-36 w-36 sm:h-44 sm:w-44" style={{ transform: 'scale(1, -1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-36 w-36 sm:h-44 sm:w-44" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(1, 1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, 1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-16 w-16 sm:h-28 sm:w-28 lg:h-44 lg:w-44" style={{ transform: 'scale(1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-16 w-16 sm:h-28 sm:w-28 lg:h-44 lg:w-44" style={{ transform: 'scale(-1, -1)' }} />
 
           {/* Floating butterflies */}
           <svg viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg" className="pointer-events-none absolute left-[10%] top-[28%] h-8 w-10 animate-butterfly opacity-75 sm:h-10 sm:w-12" aria-hidden="true">
@@ -623,10 +623,10 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
         {/* ── Section 3: CUENTA REGRESIVA ────────────────────────────────── */}
         <section className="relative overflow-hidden" style={{ backgroundColor: 'rgba(var(--secondary-rgb), 0.35)' }}>
-          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
-          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" />
+          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleX(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, -1)' }} />
           <ShimmerStars />
 
           <div className="relative mx-auto max-w-lg text-center">
@@ -663,10 +663,10 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
         {/* ── Section 4: DETALLES ─────────────────────────────────────────── */}
         <section className="relative overflow-hidden">
-          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
-          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" />
+          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleX(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, -1)' }} />
 
           <div className="relative mx-auto max-w-2xl">
             <div className="text-center">
@@ -727,10 +727,10 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
         {/* ── Section 5: DRESS CODE ───────────────────────────────────────── */}
         <section className="relative overflow-hidden" style={{ backgroundColor: 'rgba(var(--secondary-rgb), 0.30)' }}>
-          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
-          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" />
+          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleX(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, -1)' }} />
 
           <div className="relative mx-auto max-w-xl text-center">
             <p className="section-tag">
@@ -787,10 +787,10 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
         {/* ── Section 6: LLUVIA DE SOBRES ─────────────────────────────────── */}
         <section className="relative overflow-hidden">
-          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
-          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" />
+          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleX(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, -1)' }} />
 
           <div className="relative mx-auto max-w-lg text-center">
             <p className="section-tag">
@@ -822,10 +822,10 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
         {/* ── Section 7: COMPARTE EL RECUERDO ─────────────────────────────── */}
         <section className="relative overflow-hidden" style={{ backgroundColor: 'rgba(var(--secondary-rgb), 0.35)' }}>
-          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
-          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute top-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" />
+          <CornerDecor className="pointer-events-none absolute top-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleX(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, -1)' }} />
 
           <div className="relative mx-auto max-w-lg text-center">
             <p className="section-tag">
@@ -962,8 +962,8 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
         {/* ── Section 9: FINAL FOOTER SECTION ───────────────────────────────── */}
         <section className="relative overflow-hidden" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
-          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
-          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 sm:h-36 sm:w-36 lg:h-56 lg:w-56" style={{ transform: 'scale(-1, -1)' }} />
 
           <div className="relative mx-auto max-w-xl text-center px-6">
             <GoldDivider />

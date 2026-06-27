@@ -569,25 +569,15 @@ body {
   display: block;
 }
 
-section {
+.lacre-invitation section {
   position: relative;
   width: 100%;
-  padding: 80px 24px;
+  padding: 100px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   overflow: hidden;
-}
-
-section:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 15%;
-  right: 15%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(var(--secondary-rgb), 0.15) 50%, transparent 100%);
 }
 
 .section-bg-gradient {
@@ -700,7 +690,7 @@ section:not(:last-child)::after {
    SECTION 2: CARTA PERSONALIZADA
    ========================================================================== */
 .letter-section {
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.6) 0%, transparent 80%);
+  background-color: var(--white);
 }
 
 .letter-box {
@@ -708,9 +698,9 @@ section:not(:last-child)::after {
   border: 1px solid rgba(var(--accent-rgb), 0.25);
   box-shadow: 0 15px 35px rgba(var(--primary-rgb), 0.05);
   border-radius: 16px;
-  padding: 40px 30px;
+  padding: 40px 30px 80px;
   width: 100%;
-  max-width: 520px;
+  max-width: 650px;
   margin: 0 auto;
   position: relative;
 }
@@ -730,6 +720,7 @@ section:not(:last-child)::after {
   color: var(--primary);
   margin-bottom: 20px;
   line-height: 1.2;
+  text-align: center;
 }
 
 .letter-body {
@@ -975,17 +966,21 @@ section:not(:last-child)::after {
   padding: 40px 30px;
   box-shadow: 0 15px 40px rgba(var(--primary-rgb), 0.05);
   width: 100%;
-  max-width: 480px;
+  max-width: 650px;
   margin: 30px auto 10px;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .rsvp-guest-name {
   font-family: var(--font-script);
-  font-size: 2.6rem;
+  font-size: 2.8rem;
   color: var(--primary);
-  margin-bottom: 20px;
-  line-height: 1.1;
+  margin-bottom: 8px;
+  line-height: 1.15;
+  word-break: break-word;
 }
 
 .ticket-container {
@@ -1032,10 +1027,13 @@ section:not(:last-child)::after {
 }
 
 .ticket-val {
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 3.2rem;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 4px;
+  margin: 8px 0;
+  display: block;
+  line-height: 1;
 }
 
 .ticket-sub {
@@ -1148,9 +1146,10 @@ section:not(:last-child)::after {
   .rsvp-guest-name {
     font-size: 2.2rem;
   }
-  section {
-    padding: 60px 16px;
+  .lacre-invitation section {
+    padding: 80px 20px;
   }
+
 }
 
 

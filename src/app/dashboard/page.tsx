@@ -566,9 +566,9 @@ export default function DashboardPage() {
 
           {/* Bento Cell 1: Attendance Analytics (col-span-12 lg:col-span-5) */}
           <section className="col-span-12 lg:col-span-5 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
-            <div className="h-full rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40 flex flex-col justify-between">
+            <div className="h-full rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-6 sm:p-8 ring-1 ring-black/5 dark:ring-black/40 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-3.5 mb-8 border-b border-zinc-200/50 dark:border-white/5 pb-4">
+                <div className="flex items-center gap-3.5 mb-5 border-b border-zinc-200/50 dark:border-white/5 pb-4">
                   <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                     <Users size={24} weight="duotone" />
                   </div>
@@ -577,62 +577,62 @@ export default function DashboardPage() {
                     <p className="text-xs text-zinc-400 dark:text-zinc-500 font-sans mt-0.5">Confirmaciones en vivo</p>
                   </div>
                 </div>
-
+ 
                 {/* Progress Wheel Simulation */}
-                <div className="flex flex-col items-center justify-center my-8 py-6">
-                  <div className="relative flex items-center justify-center w-48 h-48 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-100/30 dark:bg-zinc-900/50 shadow-inner">
+                <div className="flex flex-col items-center justify-center my-4 py-2">
+                  <div className="relative flex items-center justify-center w-40 h-40 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-100/30 dark:bg-zinc-900/50 shadow-inner">
                     <div className="absolute inset-2.5 rounded-full border border-dashed border-zinc-300/40 dark:border-zinc-700/60" />
                     <div className="flex flex-col items-center">
-                      <span className="text-5xl lg:text-6xl font-black font-mono text-zinc-900 dark:text-white tracking-tight">{confirmRate}%</span>
-                      <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest mt-2">Confirmados</span>
+                      <span className="text-4xl lg:text-5xl font-black font-mono text-zinc-900 dark:text-white tracking-tight">{confirmRate}%</span>
+                      <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest mt-1.5">Confirmados</span>
                     </div>
                   </div>
                 </div>
-
+ 
                 {/* High Density Metric Cards */}
-                <div className="grid grid-cols-3 gap-5 mt-4">
-                  <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/5 rounded-2xl p-5 text-center shadow-sm dark:shadow-none transition hover:scale-[1.02] duration-200">
-                    <div className="flex justify-center text-emerald-500 dark:text-emerald-400 mb-2"><CheckCircle size={20} /></div>
-                    <span className="block text-2xl font-black font-mono text-zinc-900 dark:text-white">{totalConfirmedInvitees}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-500 font-bold block mt-1">Asistirán</span>
+                <div className="grid grid-cols-3 gap-4 mt-2">
+                  <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/5 rounded-2xl p-4 text-center shadow-sm dark:shadow-none transition hover:scale-[1.02] duration-200">
+                    <div className="flex justify-center text-emerald-500 dark:text-emerald-400 mb-1.5"><CheckCircle size={18} /></div>
+                    <span className="block text-xl font-black font-mono text-zinc-900 dark:text-white">{totalConfirmedInvitees}</span>
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-500 font-bold block mt-1">Asistirán</span>
                   </div>
-                  <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/5 rounded-2xl p-5 text-center shadow-sm dark:shadow-none transition hover:scale-[1.02] duration-200">
-                    <div className="flex justify-center text-red-500 dark:text-red-400 mb-2"><XCircle size={20} /></div>
-                    <span className="block text-2xl font-black font-mono text-zinc-900 dark:text-white">{totalDeclinedInvitees}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-500 font-bold block mt-1">Cancelados</span>
+                  <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-white/5 rounded-2xl p-4 text-center shadow-sm dark:shadow-none transition hover:scale-[1.02] duration-200">
+                    <div className="flex justify-center text-red-500 dark:text-red-400 mb-1.5"><XCircle size={18} /></div>
+                    <span className="block text-xl font-black font-mono text-zinc-900 dark:text-white">{totalDeclinedInvitees}</span>
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-500 font-bold block mt-1">Cancelados</span>
                   </div>
-                  <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/5 rounded-2xl p-5 text-center shadow-sm dark:shadow-none transition hover:scale-[1.02] duration-200">
-                    <div className="flex justify-center text-yellow-500 dark:text-yellow-400 mb-2"><Clock size={20} /></div>
-                    <span className="block text-2xl font-black font-mono text-zinc-900 dark:text-white">{totalPendingInvitees}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-500 font-bold block mt-1">Pendientes</span>
+                  <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-white/5 rounded-2xl p-4 text-center shadow-sm dark:shadow-none transition hover:scale-[1.02] duration-200">
+                    <div className="flex justify-center text-yellow-500 dark:text-yellow-400 mb-1.5"><Clock size={18} /></div>
+                    <span className="block text-xl font-black font-mono text-zinc-900 dark:text-white">{totalPendingInvitees}</span>
+                    <span className="text-[10px] text-zinc-500 dark:text-zinc-500 font-bold block mt-1">Pendientes</span>
                   </div>
                 </div>
               </div>
-
-              <div className="border-t border-zinc-200 dark:border-white/5 pt-6 mt-8">
-                <div className="flex justify-between items-center text-sm text-zinc-500 dark:text-zinc-400 font-mono">
+ 
+              <div className="border-t border-zinc-200 dark:border-white/5 pt-5 mt-5">
+                <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                   <span>Pases Confirmados:</span>
-                  <span className="font-bold text-zinc-900 dark:text-white text-base">{totalGuestsConfirmed} / {totalGuestsAllocated}</span>
+                  <span className="font-bold text-zinc-900 dark:text-white text-sm">{totalGuestsConfirmed} / {totalGuestsAllocated}</span>
                 </div>
-                <div className="w-full bg-zinc-200 dark:bg-zinc-950 rounded-full h-3.5 mt-3 overflow-hidden border border-zinc-300/10 dark:border-white/5 p-0.5">
+                <div className="w-full bg-zinc-200 dark:bg-zinc-950 rounded-full h-2.5 mt-2.5 overflow-hidden border border-zinc-300/10 dark:border-white/5 p-0.5">
                   <div 
                     className="bg-emerald-500 h-full rounded-full transition-all duration-500 ease-out" 
                     style={{ width: `${totalGuestsAllocated > 0 ? (totalGuestsConfirmed / totalGuestsAllocated) * 100 : 0}%` }}
                   />
                 </div>
               </div>
-
+ 
             </div>
           </section>
 
           {/* Bento Cell 2: Event Details Config (col-span-12 lg:col-span-7) */}
           <section className="col-span-12 lg:col-span-7 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
-            <div className="h-full rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40 flex flex-col justify-between">
+            <div className="h-full rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-6 sm:p-8 ring-1 ring-black/5 dark:ring-black/40 flex flex-col justify-between">
               
               {!editingEvent ? (
                 <>
                   <div>
-                    <div className="flex items-center justify-between mb-8 border-b border-zinc-200/50 dark:border-white/5 pb-4">
+                    <div className="flex items-center justify-between mb-5 border-b border-zinc-200/50 dark:border-white/5 pb-4">
                       <div className="flex items-center gap-3.5">
                         <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                           <Calendar size={24} weight="duotone" />
@@ -650,7 +650,7 @@ export default function DashboardPage() {
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-6">
                       <div className="flex items-start gap-4">
                         <div className="text-zinc-400 dark:text-zinc-500 mt-1"><Globe size={20} /></div>
                         <div>
@@ -712,7 +712,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="border-t border-zinc-200 dark:border-white/5 pt-6 mt-8 flex justify-between items-center text-xs text-zinc-400 dark:text-zinc-500">
+                  <div className="border-t border-zinc-200 dark:border-white/5 pt-5 mt-5 flex justify-between items-center text-xs text-zinc-400 dark:text-zinc-500">
                     <span className="flex items-center gap-2 font-mono">
                       <MusicNotes size={16} /> 
                       {event?.background_music_url ? 'Música activa' : 'Sin música'}
@@ -861,7 +861,7 @@ export default function DashboardPage() {
 
           {/* Bento Cell 3: High Density Guest List (col-span-12) */}
           <section className="col-span-12 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
-            <div className="rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40">
+            <div className="rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-6 sm:p-8 ring-1 ring-black/5 dark:ring-black/40">
               
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 mb-8 border-b border-zinc-200/50 dark:border-white/5 pb-6">
                 <div className="flex items-center gap-3.5">
@@ -965,21 +965,19 @@ export default function DashboardPage() {
                     {addingGuest ? <Spinner className="animate-spin" size={18} /> : <Plus size={18} />}
                   </button>
                 </div>
-              </form>
-
               {/* Table / High Density List */}
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm text-zinc-600 dark:text-zinc-400">
                   <thead>
-                    <tr className="border-b border-zinc-200 dark:border-white/5 text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                      <th className="py-4.5 px-5">Nombre del Invitado</th>
-                      <th className="py-4.5 px-5">Pases</th>
-                      <th className="py-4.5 px-5">Género</th>
-                      <th className="py-4.5 px-5">Contacto</th>
-                      <th className="py-4.5 px-5 text-center">RSVP</th>
-                      <th className="py-4.5 px-5 text-center">Acompañantes</th>
-                      <th className="py-4.5 px-5">Mensaje</th>
-                      <th className="py-4.5 px-5 text-right">Acciones</th>
+                    <tr className="border-b border-zinc-200 dark:border-white/5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                      <th className="py-3 px-4">Nombre del Invitado</th>
+                      <th className="py-3 px-4 text-center">Pases</th>
+                      <th className="py-3 px-4 text-center">Género</th>
+                      <th className="py-3 px-4">Contacto</th>
+                      <th className="py-3 px-4 text-center">RSVP</th>
+                      <th className="py-3 px-4 text-center">Acompañantes</th>
+                      <th className="py-3 px-4">Mensaje</th>
+                      <th className="py-3 px-4 text-right">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-100 dark:divide-white/5">
@@ -992,18 +990,18 @@ export default function DashboardPage() {
                     ) : (
                       filteredGuests.map((g) => (
                         <tr key={g.id} className="hover:bg-zinc-100/30 dark:hover:bg-zinc-900/30 group transition-colors duration-150">
-                          <td className="py-5 px-5 font-bold text-zinc-900 dark:text-white text-base">
+                          <td className="py-3 px-4 font-semibold text-zinc-900 dark:text-white text-sm">
                             <span>{g.name}</span>
                           </td>
-                          <td className="py-5 px-5 font-mono font-bold text-zinc-700 dark:text-zinc-300 text-sm">{g.max_slots}</td>
-                          <td className="py-5 px-5">
-                            <span className="text-xs font-bold bg-zinc-200/50 dark:bg-zinc-950 px-2.5 py-1 rounded border border-zinc-300/30 dark:border-white/5 text-zinc-700 dark:text-zinc-400">
+                          <td className="py-3 px-4 text-center font-mono font-bold text-zinc-700 dark:text-zinc-300 text-xs">{g.max_slots}</td>
+                          <td className="py-3 px-4 text-center">
+                            <span className="text-[10px] font-bold bg-zinc-200/50 dark:bg-zinc-950 px-2 py-0.5 rounded border border-zinc-300/30 dark:border-white/5 text-zinc-700 dark:text-zinc-400">
                               {g.gender === 'm' ? 'H' : g.gender === 'f' ? 'M' : 'Fam'}
                             </span>
                           </td>
-                          <td className="py-5 px-5 font-mono text-zinc-500 text-sm">{g.phone_number || '-'}</td>
-                          <td className="py-5 px-5 text-center">
-                            <span className={`text-[10px] lg:text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full inline-block ${
+                          <td className="py-3 px-4 font-mono text-zinc-500 text-xs">{g.phone_number || '-'}</td>
+                          <td className="py-3 px-4 text-center">
+                            <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-block ${
                               g.rsvp_status === 'confirmed' 
                                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
                                 : g.rsvp_status === 'declined' 
@@ -1013,31 +1011,31 @@ export default function DashboardPage() {
                               {g.rsvp_status === 'confirmed' ? 'Confirmado' : g.rsvp_status === 'declined' ? 'Declinó' : 'Pendiente'}
                             </span>
                           </td>
-                          <td className="py-5 px-5 text-center font-mono font-bold text-zinc-900 dark:text-white text-sm">
+                          <td className="py-3 px-4 text-center font-mono font-bold text-zinc-900 dark:text-white text-xs">
                             {g.rsvp_status === 'confirmed' ? g.attending_count : '-'}
                           </td>
-                          <td className="py-5 px-5 max-w-xs truncate text-zinc-500 dark:text-zinc-400 italic text-sm">
+                          <td className="py-3 px-4 max-w-xs truncate text-zinc-500 dark:text-zinc-400 italic text-xs">
                             {g.guest_message || '-'}
                           </td>
-                          <td className="py-5 px-5 text-right">
-                            <div className="flex items-center justify-end gap-2.5 opacity-80 group-hover:opacity-100 transition">
+                          <td className="py-3 px-4 text-right">
+                            <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition">
                               <button
                                 onClick={() => copyInviteLink(g.id)}
-                                className={`p-2.5 rounded-xl border transition flex items-center justify-center cursor-pointer shadow-sm ${
+                                className={`p-2 rounded-xl border transition flex items-center justify-center cursor-pointer shadow-sm ${
                                   copiedId === g.id
                                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/40'
                                     : 'bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-white/5 hover:border-purple-500/30 hover:text-purple-600 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800'
                                 }`}
                                 title="Copiar enlace único"
                               >
-                                {copiedId === g.id ? <Check size={16} /> : <LinkIcon size={16} />}
+                                {copiedId === g.id ? <Check size={14} /> : <LinkIcon size={14} />}
                               </button>
                               <button
                                 onClick={() => handleDeleteGuest(g.id)}
-                                className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 hover:border-red-500/40 text-zinc-500 dark:text-zinc-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 shadow-sm transition flex items-center justify-center cursor-pointer"
+                                className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 hover:border-red-500/40 text-zinc-500 dark:text-zinc-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 shadow-sm transition flex items-center justify-center cursor-pointer"
                                 title="Eliminar invitado"
                               >
-                                <Trash size={16} />
+                                <Trash size={14} />
                               </button>
                             </div>
                           </td>
@@ -1053,7 +1051,7 @@ export default function DashboardPage() {
 
           {/* Bento Cell 4: Live RSVP Activity Feed (col-span-12) */}
           <section className="col-span-12 rounded-[2.5rem] bg-white dark:bg-zinc-950/80 p-2.5 backdrop-blur-2xl ring-1 ring-zinc-200 dark:ring-white/10 shadow-xl transition-colors duration-300">
-            <div className="rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-10 ring-1 ring-black/5 dark:ring-black/40">
+            <div className="rounded-[calc(2.5rem-0.5rem)] bg-zinc-100/10 dark:bg-zinc-900/40 p-6 sm:p-8 ring-1 ring-black/5 dark:ring-black/40">
               
               <div className="flex items-center gap-3.5 mb-6 border-b border-zinc-200/50 dark:border-white/5 pb-4">
                 <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
@@ -1080,7 +1078,7 @@ export default function DashboardPage() {
                           act.type === 'decline' ? 'bg-red-500' : 'bg-purple-500'
                         }`} />
                         <div>
-                          <span className="font-bold text-zinc-900 dark:text-white mr-2">{act.guestName}</span>
+                          <span className="font-semibold text-zinc-900 dark:text-white mr-1.5">{act.guestName}</span>{' '}
                           <span className="text-zinc-500 dark:text-zinc-400">{act.action}</span>
                         </div>
                       </div>

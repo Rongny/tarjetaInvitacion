@@ -954,7 +954,6 @@ export default function DashboardPage() {
                 </form>
               )}
             </section>
-          </section>
 
           {/* Bento Cell 3: High Density Guest List */}
           <section id="guest-list" className="col-span-12 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/5 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-colors duration-300">

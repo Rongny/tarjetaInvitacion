@@ -151,6 +151,8 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
   // Interactive States
   const [isOpen, setIsOpen] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [isFaded, setIsFaded] = useState(false);
+  const [gateUnmounted, setGateUnmounted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   // RSVP Modal States
@@ -243,7 +245,16 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         .then(() => setIsPlaying(true))
         .catch(err => console.log('Autoplay blocked:', err));
     }
-    setTimeout(() => setIsRevealed(true), 2350);
+    // Letter finishes rising at 2.33s.
+    // Wait an extra 1.5 seconds for the user to look at it, then start cross-fade.
+    setTimeout(() => {
+      setIsFaded(true);
+      setIsRevealed(true);
+    }, 3850);
+    // Unmount the gate once the 1s opacity fade-out completes (4.85s).
+    setTimeout(() => {
+      setGateUnmounted(true);
+    }, 4850);
   };
 
   // Countdown Timer
@@ -385,8 +396,8 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
       {/* ══════════════════════════════════════════════════════════════════════
            INTRO GATE — ENVELOPE SCREEN
           ══════════════════════════════════════════════════════════════════════ */}
-      {!isRevealed && (
-        <div className={`intro-gate ${isOpen ? 'fade-out' : ''}`}>
+      {!gateUnmounted && (
+        <div className={`intro-gate ${isFaded ? 'fade-out' : ''}`}>
           <div className="intro-radial-glow"></div>
 
           {/* Decorative leaf corner SVG */}

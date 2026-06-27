@@ -1190,9 +1190,8 @@ export default function DashboardPage() {
           </section>
 
         </div>
-
       </main>
-
     </div>
-  );
+  </div>
+);
 }

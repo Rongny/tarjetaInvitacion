@@ -40,15 +40,35 @@ export default function LoginPage() {
     }
   };
 
+  const redirectByProfile = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profile?.role === 'admin') {
+      router.push('/admin');
+    } else {
+      const accessUntil = profile?.access_until ? new Date(profile.access_until) : null;
+      if (accessUntil && accessUntil > new Date()) {
+        router.push('/dashboard');
+      } else {
+        router.push('/sin-acceso?motivo=' + (accessUntil ? 'expirado' : 'pendiente'));
+      }
+    }
+  };
+
   // Check if already logged in
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        router.push('/dashboard');
+        await redirectByProfile(session.user.id);
       }
     };
     checkUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -58,7 +78,7 @@ export default function LoginPage() {
     setSuccessMsg('');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -68,9 +88,7 @@ export default function LoginPage() {
       }
 
       setSuccessMsg('Inicio de sesión exitoso. Redirigiendo...');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1000);
+      await redirectByProfile(data.user.id);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Error al iniciar sesión. Verifica tus credenciales.');
     } finally {

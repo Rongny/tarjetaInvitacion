@@ -15,6 +15,8 @@ interface ClientProfile {
   id: string;
   email: string;
   business_name?: string | null;
+  role?: string;
+  access_until?: string | null;
 }
 
 interface EventData {
@@ -33,6 +35,7 @@ interface EventData {
     secondary?: string;
     accent?: string;
     gold?: string;
+    reserved_color_name?: string;
   };
 }
 
@@ -59,32 +62,27 @@ interface ActivityLog {
 
 export default function DashboardPage() {
   const router = useRouter();
-  
-  // Auth state
+
   const [session, setSession] = useState<Session | null>(null);
   const [clientProfile, setClientProfile] = useState<ClientProfile | null>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
 
-  // App state
   const [event, setEvent] = useState<EventData | null>(null);
   const [guests, setGuests] = useState<GuestData[]>([]);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Guest list filters / form
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'declined'>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // New guest form
   const [newGuestName, setNewGuestName] = useState('');
   const [newGuestSlots, setNewGuestSlots] = useState(2);
   const [newGuestGender, setNewGuestGender] = useState<'m' | 'f' | 'n'>('n');
   const [newGuestPhone, setNewGuestPhone] = useState('');
   const [addingGuest, setAddingGuest] = useState(false);
 
-  // Event editing state
   const [editingEvent, setEditingEvent] = useState(false);
   const [editHostName, setEditHostName] = useState('');
   const [editEventDate, setEditEventDate] = useState('');
@@ -97,26 +95,22 @@ export default function DashboardPage() {
   const [editColorSecondary, setEditColorSecondary] = useState('#9964c4');
   const [editColorAccent, setEditColorAccent] = useState('#bf8ce0');
   const [editColorGold, setEditColorGold] = useState('#d4b26f');
+  const [editReservedColorName, setEditReservedColorName] = useState('Lila');
   const [savingEvent, setSavingEvent] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Base URL for guest invites
   const [originUrl, setOriginUrl] = useState('');
 
-  // Load origin URL
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOriginUrl(window.location.origin);
     }
   }, []);
 
-  // Load and apply theme
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const activeTheme = savedTheme || systemTheme;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(activeTheme);
     if (activeTheme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -136,7 +130,6 @@ export default function DashboardPage() {
     }
   };
 
-  // 1. Authenticate & fetch user session
   useEffect(() => {
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -144,17 +137,22 @@ export default function DashboardPage() {
         router.push('/login');
       } else {
         setSession(session);
-        // Fetch Client Profile
         const { data: client } = await supabase
           .from('clients')
           .select('*')
           .eq('id', session.user.id)
           .single();
-        
+
         if (client) {
+          if (client.role !== 'admin') {
+            const accessUntil = client.access_until ? new Date(client.access_until) : null;
+            if (!accessUntil || accessUntil <= new Date()) {
+              router.push('/sin-acceso?motivo=' + (accessUntil ? 'expirado' : 'pendiente'));
+              return;
+            }
+          }
           setClientProfile(client);
         } else {
-          // If public.clients doesn't have a record yet, create one
           const { data: newClient } = await supabase
             .from('clients')
             .insert({
@@ -173,13 +171,11 @@ export default function DashboardPage() {
     fetchSession();
   }, [router]);
 
-  // Keep guests ref updated for realtime callback without resubscribing
   const guestsRef = React.useRef(guests);
   useEffect(() => {
     guestsRef.current = guests;
   }, [guests]);
 
-  // 2. Fetch or auto-provision client's Event and load Guests (Memoized helper)
   const loadEventAndGuests = useCallback(async (showSkeleton = true) => {
     if (!session) return;
     if (showSkeleton) {
@@ -188,7 +184,6 @@ export default function DashboardPage() {
       setRefreshing(true);
     }
     try {
-      // Find existing events for client
       const { data: eventsList, error: eventErr } = await supabase
         .from('events')
         .select('*')
@@ -197,9 +192,8 @@ export default function DashboardPage() {
       let activeEvent: EventData | null = null;
 
       if (eventErr || !eventsList || eventsList.length === 0) {
-        // AUTO-PROVISION DEFAULT EVENT
         const defaultDate = new Date();
-        defaultDate.setMonth(defaultDate.getMonth() + 2); // 2 months from now
+        defaultDate.setMonth(defaultDate.getMonth() + 2);
 
         const { data: newEvent, error: createErr } = await supabase
           .from('events')
@@ -230,9 +224,7 @@ export default function DashboardPage() {
 
       if (activeEvent) {
         setEvent(activeEvent);
-        // Sync edit state values
         setEditHostName(activeEvent.host_name);
-        // format ISO to local datetime-local value (YYYY-MM-DDThh:mm)
         const localDateStr = activeEvent.event_date ? new Date(activeEvent.event_date).toISOString().slice(0, 16) : '';
         setEditEventDate(localDateStr);
         setEditLocationName(activeEvent.location_name);
@@ -244,8 +236,8 @@ export default function DashboardPage() {
         setEditColorSecondary(activeEvent.theme_colors?.secondary || '#9964c4');
         setEditColorAccent(activeEvent.theme_colors?.accent || '#bf8ce0');
         setEditColorGold(activeEvent.theme_colors?.gold || '#d4b26f');
+        setEditReservedColorName(activeEvent.theme_colors?.reserved_color_name || 'Lila');
 
-        // Load Guests for this event
         const { data: guestsList, error: guestErr } = await supabase
           .from('guests')
           .select('*')
@@ -255,15 +247,14 @@ export default function DashboardPage() {
         if (guestErr) throw guestErr;
         setGuests(guestsList || []);
 
-        // Seed default mock activities or load recent updates
         const recentRSVPs = (guestsList || [])
           .filter(g => g.rsvp_status !== 'pending')
           .slice(0, 5)
           .map(g => ({
             id: g.id,
             guestName: g.name,
-            action: g.rsvp_status === 'confirmed' 
-              ? `Confirmó asistencia para ${g.attending_count} personas` 
+            action: g.rsvp_status === 'confirmed'
+              ? `Confirmó asistencia para ${g.attending_count} personas`
               : 'Declinó la invitación',
             time: new Date(g.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             type: g.rsvp_status === 'confirmed' ? 'confirm' as const : 'decline' as const
@@ -278,15 +269,12 @@ export default function DashboardPage() {
     }
   }, [session]);
 
-  // Initial load
   useEffect(() => {
     if (session) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadEventAndGuests(true);
     }
   }, [session, loadEventAndGuests]);
 
-  // 3. Realtime subscription to dynamic RSVP updates
   useEffect(() => {
     if (!event) return;
 
@@ -317,16 +305,15 @@ export default function DashboardPage() {
           } else if (eventType === 'UPDATE') {
             const guest = newRecord as GuestData;
             setGuests(prev => prev.map(g => g.id === guest.id ? guest : g));
-            
-            // Log confirmation updates specifically
+
             const oldGuest = guestsRef.current.find(g => g.id === guest.id);
             if (oldGuest && oldGuest.rsvp_status !== guest.rsvp_status) {
               setActivities(prev => [
                 {
                   id: guest.id,
                   guestName: guest.name,
-                  action: guest.rsvp_status === 'confirmed' 
-                    ? `Confirmó asistencia para ${guest.attending_count} personas` 
+                  action: guest.rsvp_status === 'confirmed'
+                    ? `Confirmó asistencia para ${guest.attending_count} personas`
                     : 'Declinó la invitación',
                   time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                   type: guest.rsvp_status === 'confirmed' ? 'confirm' : 'decline'
@@ -347,13 +334,11 @@ export default function DashboardPage() {
     };
   }, [event]);
 
-  // Log out
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
   };
 
-  // Add guest action
   const handleAddGuest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGuestName.trim() || !event) return;
@@ -376,13 +361,11 @@ export default function DashboardPage() {
 
       if (error) throw error;
 
-      // Reset form
       setNewGuestName('');
       setNewGuestSlots(2);
       setNewGuestGender('n');
       setNewGuestPhone('');
 
-      // Add to local state proactively so it appears instantly
       if (data) {
         setGuests(prev => {
           if (prev.some(g => g.id === data.id)) return prev;
@@ -397,7 +380,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Delete guest action
   const handleDeleteGuest = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar a este invitado?')) return;
 
@@ -408,8 +390,6 @@ export default function DashboardPage() {
         .eq('id', id);
 
       if (error) throw error;
-
-      // Remove from local state proactively
       setGuests(prev => prev.filter(g => g.id !== id));
     } catch (err) {
       console.error('Error deleting guest:', err);
@@ -417,7 +397,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Update event configuration
   const handleUpdateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!event) return;
@@ -438,7 +417,8 @@ export default function DashboardPage() {
             primary: editColorPrimary,
             secondary: editColorSecondary,
             accent: editColorAccent,
-            gold: editColorGold
+            gold: editColorGold,
+            reserved_color_name: editReservedColorName
           }
         })
         .eq('id', event.id)
@@ -456,7 +436,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Copy unique invite link
   const copyInviteLink = (id: string) => {
     const inviteUrl = `${originUrl}/invitado/${id}`;
     navigator.clipboard.writeText(inviteUrl).then(() => {
@@ -465,7 +444,6 @@ export default function DashboardPage() {
     });
   };
 
-  // Copy batch of all invite links
   const copyAllLinks = () => {
     const textList = filteredGuests.map(g => `${g.name}: ${originUrl}/invitado/${g.id}`).join('\n');
     navigator.clipboard.writeText(textList).then(() => {
@@ -473,21 +451,17 @@ export default function DashboardPage() {
     });
   };
 
-  // Stats Calculations
   const totalGuestsAllocated = guests.reduce((acc, g) => acc + g.max_slots, 0);
   const totalGuestsConfirmed = guests.reduce((acc, g) => acc + g.attending_count, 0);
   const totalConfirmedInvitees = guests.filter(g => g.rsvp_status === 'confirmed').length;
   const totalDeclinedInvitees = guests.filter(g => g.rsvp_status === 'declined').length;
   const totalPendingInvitees = guests.filter(g => g.rsvp_status === 'pending').length;
   const totalInvitees = guests.length;
-
   const confirmRate = totalInvitees > 0 ? Math.round((totalConfirmedInvitees / totalInvitees) * 100) : 0;
 
-  // Filter & Search guests
   const filteredGuests = guests.filter(g => {
-    const matchesSearch = g.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch = g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (g.phone_number && g.phone_number.includes(searchQuery));
-    
     if (statusFilter === 'all') return matchesSearch;
     return matchesSearch && g.rsvp_status === statusFilter;
   });
@@ -503,58 +477,73 @@ export default function DashboardPage() {
     );
   }
 
+  // ─── RENDER ──────────────────────────────────────────────────────────────
+  const SectionHeader = ({
+    icon, title, subtitle, action
+  }: {
+    icon: React.ReactNode;
+    title: string;
+    subtitle: string;
+    action?: React.ReactNode;
+  }) => (
+    <div className="flex items-center justify-between bg-slate-100/80 dark:bg-zinc-800/60 rounded-2xl px-6 py-4 mb-8">
+      <div className="flex items-center gap-3.5">
+        <div className="shrink-0">{icon}</div>
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-200 leading-none">{title}</h2>
+          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">{subtitle}</p>
+        </div>
+      </div>
+      {action && <div className="shrink-0 ml-4">{action}</div>}
+    </div>
+  );
+
   return (
-    <div className="min-h-screen w-full flex flex-col bg-[#f8fafc] dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
-      
-      {/* ── Top Header Navigation (No Sidebar) ───────────────────────────────── */}
-      <header className="sticky top-0 z-50 w-full border-b border-zinc-200/80 dark:border-white/5 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between">
-            {/* Left Brand and Session Info */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-600/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 shadow-sm">
-                <Globe size={24} weight="duotone" />
+    <div className="min-h-screen w-full flex flex-col items-center bg-[#f4f5f8] dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
+
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/70 dark:border-white/5 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md transition-colors duration-300">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-14 items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 text-white shadow-sm shadow-violet-500/30">
+                <Globe size={16} weight="fill" />
               </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold tracking-tight text-zinc-950 dark:text-white text-lg">Lacre</span>
-                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider -mt-0.5">
+              <div className="flex flex-col leading-none">
+                <span className="font-extrabold tracking-tight text-zinc-950 dark:text-white text-sm">Lacre</span>
+                <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider mt-0.5">
                   {clientProfile?.business_name || 'Panel de control'}
                 </span>
               </div>
             </div>
 
-            {/* Right Control Actions */}
-            <div className="flex items-center gap-3">
-              {/* Sync Button */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => loadEventAndGuests(false)}
                 disabled={refreshing}
-                className="flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 px-4.5 py-2.5 text-xs font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 transition duration-150 cursor-pointer shadow-sm"
+                className="flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition cursor-pointer active:scale-[0.97]"
                 title="Sincronizar datos"
               >
-                <ArrowsClockwise size={14} className={refreshing ? 'animate-spin' : ''} />
+                <ArrowsClockwise size={13} className={refreshing ? 'animate-spin' : ''} />
                 <span className="hidden sm:inline">Sincronizar</span>
               </button>
 
-              {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-500 dark:text-zinc-400 cursor-pointer transition shadow-sm"
+                className="p-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 cursor-pointer transition active:scale-[0.97]"
                 title="Cambiar tema"
               >
-                {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+                {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
               </button>
 
-              {/* Separator */}
-              <span className="h-5 w-px bg-zinc-200 dark:bg-white/10" />
+              <span className="h-4 w-px bg-slate-200 dark:bg-white/10" />
 
-              {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 px-4 py-2.5 text-xs font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 transition duration-150 cursor-pointer shadow-sm"
+                className="flex items-center gap-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition cursor-pointer active:scale-[0.97]"
                 title="Cerrar sesión"
               >
-                <SignOut size={16} />
+                <SignOut size={13} />
                 <span className="hidden sm:inline">Cerrar Sesión</span>
               </button>
             </div>
@@ -562,480 +551,370 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* ── Main Layout Body (Centered Content) ───────────────────────────────── */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-        
-        {/* Bento Grid */}
-        <div className="grid grid-cols-12 gap-6 lg:gap-8">
+      {/* Main */}
+      <main className="flex-1 w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-7 lg:py-9">
+        <div className="grid grid-cols-12 gap-5 lg:gap-6">
 
-            {/* Bento Cell 1: Attendance Analytics */}
-            <section className="col-span-12 lg:col-span-5 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/5 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between min-h-[480px] transition-colors duration-300">
-              <div>
-                {/* Header */}
-                <div className="flex items-center gap-3.5 mb-6 border-b border-zinc-200/80 dark:border-white/5 pb-4">
-                  <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    <Users size={22} weight="duotone" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Analíticas de Asistencia</h2>
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500 font-sans mt-0.5">Confirmaciones en tiempo real</p>
-                  </div>
-                </div>
-
-                {/* Progress Donut Chart */}
-                <div className="flex flex-col items-center justify-center my-6 py-2">
-                  <div className="relative flex items-center justify-center w-36 h-36">
-                    <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
-                      <circle cx="50" cy="50" r="42" stroke="currentColor" className="text-zinc-100 dark:text-zinc-800" strokeWidth="8" fill="transparent" />
-                      <circle 
-                        cx="50" 
-                        cy="50" 
-                        r="42" 
-                        stroke={event?.theme_colors?.primary || '#6366f1'} 
-                        strokeWidth="8" 
-                        fill="transparent"
-                        strokeDasharray={263.89} 
-                        strokeDashoffset={263.89 - (263.89 * confirmRate) / 100}
-                        strokeLinecap="round" 
-                        className="transition-all duration-1000" 
-                      />
-                    </svg>
-                    <div className="absolute flex flex-col items-center">
-                      <span className="text-3xl font-black font-mono text-zinc-950 dark:text-white leading-none">{confirmRate}%</span>
-                      <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest mt-1.5">Confirmados</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Metric Cards */}
-                <div className="grid grid-cols-3 gap-3.5 mt-4">
-                  <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 rounded-2xl p-3.5 text-center transition hover:scale-[1.02] duration-200">
-                    <div className="flex justify-center text-emerald-500 dark:text-emerald-400 mb-1.5"><CheckCircle size={18} /></div>
-                    <span className="block text-lg font-black font-mono text-zinc-900 dark:text-white leading-none">{totalConfirmedInvitees}</span>
-                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold block mt-1 uppercase">Asistirán</span>
-                  </div>
-                  <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 rounded-2xl p-3.5 text-center transition hover:scale-[1.02] duration-200">
-                    <div className="flex justify-center text-red-500 dark:text-red-400 mb-1.5"><XCircle size={18} /></div>
-                    <span className="block text-lg font-black font-mono text-zinc-900 dark:text-white leading-none">{totalDeclinedInvitees}</span>
-                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold block mt-1 uppercase">Cancelaron</span>
-                  </div>
-                  <div className="bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 rounded-2xl p-3.5 text-center transition hover:scale-[1.02] duration-200">
-                    <div className="flex justify-center text-yellow-500 dark:text-yellow-400 mb-1.5"><Clock size={18} /></div>
-                    <span className="block text-lg font-black font-mono text-zinc-900 dark:text-white leading-none">{totalPendingInvitees}</span>
-                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-bold block mt-1 uppercase">Pendientes</span>
-                  </div>
-                </div>
+          {/* ── KPI Row ── */}
+          {([
+            { value: totalInvitees, label: 'Total Invitados', icon: <Users size={20} weight="duotone" />, bg: 'bg-violet-100 dark:bg-violet-950/40', text: 'text-violet-700 dark:text-violet-400', border: 'border-violet-200 dark:border-violet-800/30' },
+            { value: totalConfirmedInvitees, label: 'Confirmados', icon: <CheckCircle size={20} weight="duotone" />, bg: 'bg-emerald-100 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800/30' },
+            { value: totalPendingInvitees, label: 'Pendientes', icon: <Clock size={20} weight="duotone" />, bg: 'bg-amber-100 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800/30' },
+            { value: totalDeclinedInvitees, label: 'Declinaron', icon: <XCircle size={20} weight="duotone" />, bg: 'bg-red-100 dark:bg-red-950/40', text: 'text-red-600 dark:text-red-400', border: 'border-red-200 dark:border-red-800/30' },
+          ]).map(kpi => (
+            <div key={kpi.label} className="col-span-6 sm:col-span-3 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-white/5 px-7 py-6 shadow-sm flex items-center gap-5 transition-colors duration-300">
+              <div className={`p-3 rounded-xl ${kpi.bg} ${kpi.text} border ${kpi.border} shrink-0`}>
+                {kpi.icon}
               </div>
+              <div className="min-w-0">
+                <p className="text-3xl font-black font-mono text-zinc-900 dark:text-white leading-none">{kpi.value}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mt-1.5 truncate">{kpi.label}</p>
+              </div>
+            </div>
+          ))}
 
-              {/* Footer Progress */}
-              <div className="border-t border-zinc-200 dark:border-white/5 pt-5 mt-6">
-                <div className="flex justify-between items-center text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
-                  <span>Pases Confirmados:</span>
-                  <span className="font-bold text-zinc-900 dark:text-white">{totalGuestsConfirmed} / {totalGuestsAllocated}</span>
-                </div>
-                <div className="w-full bg-zinc-200/60 dark:bg-zinc-950 rounded-full h-2.5 mt-2.5 overflow-hidden border border-zinc-300/10 dark:border-white/5 p-0.5">
-                  <div 
-                    className="h-full rounded-full transition-all duration-500 ease-out" 
-                    style={{ 
-                      backgroundColor: event?.theme_colors?.primary || '#6366f1',
-                      width: `${totalGuestsAllocated > 0 ? (totalGuestsConfirmed / totalGuestsAllocated) * 100 : 0}%` 
-                    }}
+          {/* ── Analytics ── */}
+          <section className="col-span-12 lg:col-span-5 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-white/5 p-9 shadow-sm flex flex-col transition-colors duration-300">
+            <SectionHeader
+              icon={<div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/30"><Users size={18} weight="duotone" /></div>}
+              title="Analíticas de Asistencia"
+              subtitle="Confirmaciones en tiempo real"
+            />
+
+            <div className="flex flex-col items-center justify-center py-6">
+              <div className="relative flex items-center justify-center w-36 h-36">
+                <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
+                  <circle cx="50" cy="50" r="42" stroke="currentColor" className="text-slate-100 dark:text-zinc-800" strokeWidth="7" fill="transparent" />
+                  <circle
+                    cx="50" cy="50" r="42"
+                    stroke={event?.theme_colors?.primary || '#7c3aed'}
+                    strokeWidth="7" fill="transparent"
+                    strokeDasharray={263.9}
+                    strokeDashoffset={263.9 - (263.9 * confirmRate) / 100}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000"
                   />
+                </svg>
+                <div className="absolute flex flex-col items-center">
+                  <span className="text-4xl font-black font-mono text-zinc-950 dark:text-white leading-none">{confirmRate}%</span>
+                  <span className="text-[9px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mt-2">Confirmados</span>
                 </div>
-              </div>
-            </section>
-
-            {/* Bento Cell 2: Event Details Config */}
-            <section className="col-span-12 lg:col-span-7 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/5 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col justify-between min-h-[480px] transition-colors duration-300">
-              {!editingEvent ? (
-                <>
-                  <div className="h-full flex flex-col justify-between">
-                    <div>
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-6 border-b border-zinc-200/80 dark:border-white/5 pb-4">
-                        <div className="flex items-center gap-3.5">
-                          <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                            <Calendar size={22} weight="duotone" />
-                          </div>
-                          <div>
-                            <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Detalles del Evento</h2>
-                            <p className="text-xs text-zinc-400 dark:text-zinc-500 font-sans mt-0.5">Ajustes generales y paleta de colores</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setEditingEvent(true)}
-                          className="rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 hover:border-purple-500/40 dark:hover:border-purple-500/40 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs px-4 py-2 font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 transition cursor-pointer shadow-sm"
-                        >
-                          Configurar
-                        </button>
-                      </div>
-
-                      {/* Details Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-6">
-                        <div className="flex items-start gap-3.5">
-                          <div className="text-zinc-400 dark:text-zinc-500 mt-1 shrink-0"><Globe size={18} /></div>
-                          <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">Anfitriona</span>
-                            <span className="text-sm text-zinc-800 dark:text-zinc-200 font-semibold">{event?.host_name}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3.5">
-                          <div className="text-zinc-400 dark:text-zinc-500 mt-1 shrink-0"><Calendar size={18} /></div>
-                          <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">Fecha del Evento</span>
-                            <span className="text-sm text-zinc-800 dark:text-zinc-200 font-semibold font-mono">
-                              {event?.event_date ? new Date(event.event_date).toLocaleString('es-ES', { 
-                                weekday: 'long', 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              }) : 'No configurada'}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3.5 sm:col-span-2">
-                          <div className="text-zinc-400 dark:text-zinc-500 mt-1 shrink-0"><MapPin size={18} /></div>
-                          <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">Lugar & Dirección</span>
-                            <span className="text-sm text-zinc-800 dark:text-zinc-200 font-semibold block">{event?.location_name}</span>
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400 block mt-0.5">{event?.location_address}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3.5 sm:col-span-2">
-                          <div className="text-zinc-400 dark:text-zinc-500 mt-1 shrink-0"><Palette size={18} /></div>
-                          <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-1.5">Colores del Tema (Diseño)</span>
-                            <div className="flex flex-wrap gap-2.5 mt-0.5">
-                              <span className="flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 px-3 py-1.5 rounded-xl">
-                                <span className="w-3 h-3 rounded-full border border-zinc-300 dark:border-white/10" style={{ backgroundColor: event?.theme_colors?.primary }} />
-                                Principal
-                              </span>
-                              <span className="flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 px-3 py-1.5 rounded-xl">
-                                <span className="w-3 h-3 rounded-full border border-zinc-300 dark:border-white/10" style={{ backgroundColor: event?.theme_colors?.secondary }} />
-                                Secundario
-                              </span>
-                              <span className="flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 px-3 py-1.5 rounded-xl">
-                                <span className="w-3 h-3 rounded-full border border-zinc-300 dark:border-white/10" style={{ backgroundColor: event?.theme_colors?.accent }} />
-                                Acento
-                              </span>
-                              <span className="flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-950/40 border border-zinc-200/50 dark:border-white/5 px-3 py-1.5 rounded-xl">
-                                <span className="w-3 h-3 rounded-full border border-zinc-300 dark:border-white/10" style={{ backgroundColor: event?.theme_colors?.gold }} />
-                                Oro
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Footer Status */}
-                    <div className="border-t border-zinc-200 dark:border-white/5 pt-5 mt-6 flex justify-between items-center text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">
-                      <span className="flex items-center gap-1.5 font-mono">
-                        <MusicNotes size={14} /> 
-                        {event?.background_music_url ? 'Música activa' : 'Sin música'}
-                      </span>
-                      <span className="flex items-center gap-1.5 font-mono">
-                        <LinkIcon size={14} /> 
-                        {event?.photos_folder_url ? 'Fotos enlazadas' : 'Sin galería'}
-                      </span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <form onSubmit={handleUpdateEvent} className="h-full flex flex-col justify-between space-y-5">
-                  <div>
-                    <div className="flex items-center justify-between mb-5 border-b border-zinc-200/80 dark:border-white/5 pb-4">
-                      <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-white">Editar Evento</h3>
-                      <div className="flex gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => setEditingEvent(false)}
-                          className="rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-xs px-3.5 py-2 font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer shadow-sm"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={savingEvent}
-                          className="rounded-xl bg-purple-600 text-xs px-3.5 py-2 font-bold uppercase tracking-wider text-white hover:bg-purple-500 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm shadow-purple-500/20"
-                        >
-                          {savingEvent ? <Spinner className="animate-spin" size={14} /> : <FloppyDisk size={14} />}
-                          Guardar
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Nombre del Anfitrión/a</label>
-                        <input
-                          type="text"
-                          required
-                          value={editHostName}
-                          onChange={(e) => setEditHostName(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Fecha y Hora</label>
-                        <input
-                          type="datetime-local"
-                          required
-                          value={editEventDate}
-                          onChange={(e) => setEditEventDate(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Lugar (Nombre)</label>
-                        <input
-                          type="text"
-                          required
-                          value={editLocationName}
-                          onChange={(e) => setEditLocationName(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Mapa (Google Maps URL)</label>
-                        <input
-                          type="url"
-                          value={editLocationMapUrl}
-                          onChange={(e) => setEditLocationMapUrl(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                          placeholder="https://maps.app.goo.gl/..."
-                        />
-                      </div>
-                      <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Dirección Completa</label>
-                        <input
-                          type="text"
-                          required
-                          value={editLocationAddress}
-                          onChange={(e) => setEditLocationAddress(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Música (URL MP3)</label>
-                        <input
-                          type="url"
-                          value={editBackgroundMusicUrl}
-                          onChange={(e) => setEditBackgroundMusicUrl(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                          placeholder="https://servidor.com/musica.mp3"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">Galería de Fotos</label>
-                        <input
-                          type="url"
-                          value={editPhotosFolderUrl}
-                          onChange={(e) => setEditPhotosFolderUrl(e.target.value)}
-                          className="w-full text-xs h-[42px] rounded-xl border-0 bg-zinc-50 dark:bg-zinc-950 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
-                          placeholder="https://drive.google.com/..."
-                        />
-                      </div>
-                    </div>
-
-                    {/* Colors */}
-                    <div className="pt-4 mt-4 border-t border-zinc-200 dark:border-white/5">
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-2">Paleta de Colores</label>
-                      <div className="grid grid-cols-4 gap-2">
-                        <div>
-                          <span className="text-[8px] text-zinc-400 font-semibold block mb-1">Principal</span>
-                          <div className="flex gap-1.5">
-                            <input type="color" value={editColorPrimary} onChange={(e) => setEditColorPrimary(e.target.value)} className="w-6 h-6 border-0 bg-transparent rounded cursor-pointer" />
-                            <input type="text" value={editColorPrimary} onChange={(e) => setEditColorPrimary(e.target.value)} className="w-full text-[10px] h-[26px] bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-white rounded-lg px-1.5 border border-zinc-200/80 dark:border-white/10 font-mono focus:outline-none" />
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-[8px] text-zinc-400 font-semibold block mb-1">Secundario</span>
-                          <div className="flex gap-1.5">
-                            <input type="color" value={editColorSecondary} onChange={(e) => setEditColorSecondary(e.target.value)} className="w-6 h-6 border-0 bg-transparent rounded cursor-pointer" />
-                            <input type="text" value={editColorSecondary} onChange={(e) => setEditColorSecondary(e.target.value)} className="w-full text-[10px] h-[26px] bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-white rounded-lg px-1.5 border border-zinc-200/80 dark:border-white/10 font-mono focus:outline-none" />
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-[8px] text-zinc-400 font-semibold block mb-1">Acento</span>
-                          <div className="flex gap-1.5">
-                            <input type="color" value={editColorAccent} onChange={(e) => setEditColorAccent(e.target.value)} className="w-6 h-6 border-0 bg-transparent rounded cursor-pointer" />
-                            <input type="text" value={editColorAccent} onChange={(e) => setEditColorAccent(e.target.value)} className="w-full text-[10px] h-[26px] bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-white rounded-lg px-1.5 border border-zinc-200/80 dark:border-white/10 font-mono focus:outline-none" />
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-[8px] text-zinc-400 font-semibold block mb-1">Oro</span>
-                          <div className="flex gap-1.5">
-                            <input type="color" value={editColorGold} onChange={(e) => setEditColorGold(e.target.value)} className="w-6 h-6 border-0 bg-transparent rounded cursor-pointer" />
-                            <input type="text" value={editColorGold} onChange={(e) => setEditColorGold(e.target.value)} className="w-full text-[10px] h-[26px] bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-white rounded-lg px-1.5 border border-zinc-200/80 dark:border-white/10 font-mono focus:outline-none" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              )}
-            </section>
-
-          {/* Bento Cell 3: High Density Guest List */}
-          <section id="guest-list" className="col-span-12 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/5 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-colors duration-300">
-            
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 mb-6 border-b border-zinc-200/80 dark:border-white/5 pb-6">
-              <div className="flex items-center gap-3.5">
-                <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                  <UserList size={22} weight="duotone" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Lista de Invitados</h2>
-                  <p className="text-xs text-zinc-400 dark:text-zinc-500 font-sans mt-0.5">Administra los enlaces seguros y la asistencia</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 sm:self-stretch xl:self-auto">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar por nombre..."
-                  className="text-sm rounded-2xl border-0 bg-zinc-50 dark:bg-zinc-950 h-[42px] px-4.5 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none w-full sm:w-64 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm"
-                />
-                
-                <div className="flex rounded-2xl bg-zinc-50 dark:bg-zinc-950 p-1.5 ring-1 ring-zinc-200/80 dark:ring-white/10 w-full sm:w-auto shadow-sm">
-                  {(['all', 'pending', 'confirmed', 'declined'] as const).map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => setStatusFilter(st)}
-                      className={`text-xs font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl transition cursor-pointer flex-1 text-center min-w-[65px] ${
-                        statusFilter === st 
-                          ? 'bg-purple-600 text-white shadow' 
-                          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white'
-                      }`}
-                    >
-                      {st === 'all' ? 'Todos' : st === 'pending' ? 'Pend.' : st === 'confirmed' ? 'Sí' : 'No'}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={copyAllLinks}
-                  className="flex h-[42px] items-center justify-center gap-2 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-850 text-xs font-bold uppercase tracking-wider px-5 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white shadow-sm transition cursor-pointer w-full sm:w-auto"
-                >
-                  <CopySimple size={16} />
-                  Copiar Enlaces
-                </button>
               </div>
             </div>
 
-            {/* Inline Add Guest Form */}
-            <form onSubmit={handleAddGuest} className="grid grid-cols-1 sm:grid-cols-12 gap-5 bg-zinc-50 dark:bg-zinc-950/40 rounded-2xl p-5 border border-zinc-200/60 dark:border-white/5 mb-6">
-              <div className="sm:col-span-4">
-                <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Nombre del Invitado</label>
-                <input
-                  type="text"
-                  required
-                  value={newGuestName}
-                  onChange={(e) => setNewGuestName(e.target.value)}
-                  placeholder="Nombre completo"
-                  className="w-full text-xs h-[42px] rounded-xl border-0 bg-white dark:bg-zinc-900 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/5 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm"
+            <div className="grid grid-cols-3 divide-x divide-slate-200 dark:divide-white/5 border border-slate-100 dark:border-white/5 rounded-2xl overflow-hidden mt-2">
+              <div className="text-center py-5 px-3">
+                <span className="block text-2xl font-extrabold font-mono text-zinc-900 dark:text-white leading-none">{totalConfirmedInvitees}</span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold block mt-2 uppercase tracking-wide">Asistirán</span>
+              </div>
+              <div className="text-center py-5 px-3">
+                <span className="block text-2xl font-extrabold font-mono text-zinc-900 dark:text-white leading-none">{totalDeclinedInvitees}</span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold block mt-2 uppercase tracking-wide">Cancelaron</span>
+              </div>
+              <div className="text-center py-5 px-3">
+                <span className="block text-2xl font-extrabold font-mono text-zinc-900 dark:text-white leading-none">{totalPendingInvitees}</span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold block mt-2 uppercase tracking-wide">Pendientes</span>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 font-mono">Cupos Confirmados</span>
+                <span className="text-[11px] font-bold text-zinc-900 dark:text-white font-mono">{totalGuestsConfirmed} / {totalGuestsAllocated}</span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-zinc-950 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    backgroundColor: event?.theme_colors?.primary || '#7c3aed',
+                    width: `${totalGuestsAllocated > 0 ? (totalGuestsConfirmed / totalGuestsAllocated) * 100 : 0}%`
+                  }}
                 />
               </div>
-              <div className="sm:col-span-2">
-                <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Pases</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min={1}
-                    max={50}
-                    required
-                    value={newGuestSlots}
-                    onChange={(e) => setNewGuestSlots(parseInt(e.target.value) || 1)}
-                    className="w-full text-xs h-[42px] rounded-xl border-0 bg-white dark:bg-zinc-900 py-0 pl-4 pr-12 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/5 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono shadow-sm"
-                    placeholder="Pases"
-                  />
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase">Pases</span>
+            </div>
+          </section>
+
+          {/* ── Event Details ── */}
+          <section className="col-span-12 lg:col-span-7 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-white/5 p-9 shadow-sm flex flex-col transition-colors duration-300">
+            {!editingEvent ? (
+              <>
+                <SectionHeader
+                  icon={<div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/30"><Calendar size={18} weight="duotone" /></div>}
+                  title="Detalles del Evento"
+                  subtitle="Ajustes generales y paleta de colores"
+                  action={
+                    <button
+                      onClick={() => setEditingEvent(true)}
+                      className="rounded-xl bg-white dark:bg-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-600 border border-slate-200 dark:border-white/10 text-xs px-4 py-2 font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-200 transition cursor-pointer active:scale-[0.97] shadow-sm"
+                    >
+                      Configurar
+                    </button>
+                  }
+                />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 flex-1">
+                  <div className="flex items-start gap-3.5">
+                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 shrink-0 mt-0.5"><Globe size={15} weight="duotone" /></div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1.5">Anfitriona</span>
+                      <span className="text-sm text-zinc-900 dark:text-zinc-100 font-bold">{event?.host_name}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3.5">
+                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 shrink-0 mt-0.5"><Calendar size={15} weight="duotone" /></div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1.5">Fecha del Evento</span>
+                      <span className="text-sm text-zinc-900 dark:text-zinc-100 font-bold font-mono leading-snug">
+                        {event?.event_date ? new Date(event.event_date).toLocaleString('es-ES', {
+                          weekday: 'long', year: 'numeric', month: 'long',
+                          day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        }) : 'No configurada'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3.5 sm:col-span-2">
+                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 shrink-0 mt-0.5"><MapPin size={15} weight="duotone" /></div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1.5">Lugar & Dirección</span>
+                      <span className="text-sm text-zinc-900 dark:text-zinc-100 font-bold block">{event?.location_name}</span>
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 block mt-1">{event?.location_address}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3.5 sm:col-span-2">
+                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 shrink-0 mt-0.5"><Palette size={15} weight="duotone" /></div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-2.5">Colores del Tema</span>
+                      <div className="flex flex-wrap gap-2.5">
+                        {[
+                          { label: 'Principal', color: event?.theme_colors?.primary },
+                          { label: 'Secundario', color: event?.theme_colors?.secondary },
+                          { label: 'Acento', color: event?.theme_colors?.accent },
+                          { label: 'Oro', color: event?.theme_colors?.gold },
+                        ].map(c => (
+                          <span key={c.label} className="flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-300 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-white/10 px-3.5 py-2 rounded-xl">
+                            <span className="w-3 h-3 rounded-full border border-zinc-200 dark:border-white/10 shrink-0" style={{ backgroundColor: c.color }} />
+                            {c.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-white/5 flex justify-between items-center">
+                  <span className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                    <MusicNotes size={14} />
+                    {event?.background_music_url ? 'Música activa' : 'Sin música'}
+                  </span>
+                  <span className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                    <LinkIcon size={14} />
+                    {event?.photos_folder_url ? 'Fotos enlazadas' : 'Sin galería'}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <form onSubmit={handleUpdateEvent} className="flex flex-col gap-5">
+                <div className="flex items-center justify-between bg-slate-100/80 dark:bg-zinc-800/60 rounded-2xl px-6 py-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-200">Editar Evento</h3>
+                  <div className="flex gap-2.5">
+                    <button type="button" onClick={() => setEditingEvent(false)}
+                      className="rounded-xl bg-white dark:bg-zinc-700 border border-slate-200 dark:border-white/10 text-xs px-4 py-2 font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-300 hover:bg-slate-50 transition cursor-pointer active:scale-[0.97]">
+                      Cancelar
+                    </button>
+                    <button type="submit" disabled={savingEvent}
+                      className="rounded-xl bg-violet-600 text-xs px-4 py-2 font-bold uppercase tracking-wider text-white hover:bg-violet-500 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm shadow-violet-500/20 active:scale-[0.97]">
+                      {savingEvent ? <Spinner className="animate-spin" size={12} /> : <FloppyDisk size={12} />}
+                      Guardar
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Nombre del Anfitrión/a</label>
+                    <input type="text" required value={editHostName} onChange={(e) => setEditHostName(e.target.value)}
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Fecha y Hora</label>
+                    <input type="datetime-local" required value={editEventDate} onChange={(e) => setEditEventDate(e.target.value)}
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Lugar (Nombre)</label>
+                    <input type="text" required value={editLocationName} onChange={(e) => setEditLocationName(e.target.value)}
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Mapa (Google Maps URL)</label>
+                    <input type="url" value={editLocationMapUrl} onChange={(e) => setEditLocationMapUrl(e.target.value)} placeholder="https://maps.app.goo.gl/..."
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="sm:col-span-2 flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Dirección Completa</label>
+                    <input type="text" required value={editLocationAddress} onChange={(e) => setEditLocationAddress(e.target.value)}
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Música (URL MP3)</label>
+                    <input type="url" value={editBackgroundMusicUrl} onChange={(e) => setEditBackgroundMusicUrl(e.target.value)} placeholder="https://servidor.com/musica.mp3"
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Galería de Fotos</label>
+                    <input type="url" value={editPhotosFolderUrl} onChange={(e) => setEditPhotosFolderUrl(e.target.value)} placeholder="https://drive.google.com/..."
+                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 dark:border-white/5">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">Paleta de Colores</label>
+                  <div className="grid grid-cols-4 gap-3">
+                    {([
+                      { label: 'Principal', value: editColorPrimary, setter: setEditColorPrimary },
+                      { label: 'Secundario', value: editColorSecondary, setter: setEditColorSecondary },
+                      { label: 'Acento', value: editColorAccent, setter: setEditColorAccent },
+                      { label: 'Oro', value: editColorGold, setter: setEditColorGold },
+                    ] as const).map(c => (
+                      <div key={c.label} className="flex flex-col gap-1.5">
+                        <span className="text-[9px] text-zinc-500 font-bold uppercase">{c.label}</span>
+                        <div className="flex gap-1.5 items-center">
+                          <input type="color" value={c.value} onChange={(e) => c.setter(e.target.value)} className="w-8 h-8 border-0 bg-transparent rounded-lg cursor-pointer" />
+                          <input type="text" value={c.value} onChange={(e) => c.setter(e.target.value)} className="w-full text-[10px] h-8 bg-slate-50 dark:bg-zinc-950 text-zinc-950 dark:text-white rounded-lg px-2 border border-slate-200 dark:border-white/10 font-mono focus:outline-none" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex flex-col gap-1.5">
+                    <span className="text-[9px] text-zinc-500 font-bold uppercase">Color reservado (nombre)</span>
+                    <div className="flex gap-2 items-center">
+                      <div className="w-8 h-8 rounded-lg shrink-0 border border-slate-200 dark:border-white/10" style={{ backgroundColor: editColorPrimary }} />
+                      <input
+                        type="text"
+                        value={editReservedColorName}
+                        onChange={(e) => setEditReservedColorName(e.target.value)}
+                        placeholder="Ej: Lila, Morado, Rosa..."
+                        className="w-full text-xs h-8 bg-slate-50 dark:bg-zinc-950 text-zinc-950 dark:text-white rounded-lg px-3 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-1 focus:ring-violet-400"
+                      />
+                    </div>
+                    <p className="text-[9px] text-zinc-400 dark:text-zinc-500">Este nombre aparece en la sección Dress Code de la invitación.</p>
+                  </div>
+                </div>
+              </form>
+            )}
+          </section>
+
+          {/* ── Guest List ── */}
+          <section id="guest-list" className="col-span-12 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-white/5 p-9 shadow-sm transition-colors duration-300">
+            <SectionHeader
+              icon={<div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/30"><UserList size={18} weight="duotone" /></div>}
+              title="Lista de Invitados"
+              subtitle="Administra los enlaces seguros y la asistencia"
+              action={
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Buscar por nombre..."
+                    className="text-xs rounded-xl border-0 bg-white dark:bg-zinc-950 h-8 px-3.5 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none w-44 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm"
+                  />
+                  <div className="flex rounded-xl bg-white dark:bg-zinc-950 p-0.5 ring-1 ring-slate-200 dark:ring-white/10 shadow-sm">
+                    {(['all', 'pending', 'confirmed', 'declined'] as const).map((st) => (
+                      <button key={st} onClick={() => setStatusFilter(st)}
+                        className={`text-[10px] font-bold uppercase px-3.5 py-1.5 rounded-lg transition cursor-pointer min-w-[48px] text-center ${
+                          statusFilter === st ? 'bg-violet-600 text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white'
+                        }`}>
+                        {st === 'all' ? 'Todos' : st === 'pending' ? 'Pend.' : st === 'confirmed' ? 'Sí' : 'No'}
+                      </button>
+                    ))}
+                  </div>
+                  <button onClick={copyAllLinks}
+                    className="flex h-8 items-center gap-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 border border-slate-200 dark:border-white/10 text-[10px] font-bold uppercase tracking-wide px-3.5 text-zinc-600 dark:text-zinc-300 transition cursor-pointer active:scale-[0.97] shadow-sm">
+                    <CopySimple size={12} />
+                    Copiar Enlaces
+                  </button>
+                </div>
+              }
+            />
+
+            {/* Add Guest Form */}
+            <form onSubmit={handleAddGuest} className="grid grid-cols-12 gap-3 bg-slate-50/70 dark:bg-zinc-950/40 rounded-2xl p-5 border border-slate-200/60 dark:border-white/5 mb-6">
+              <div className="col-span-12 sm:col-span-4 flex flex-col gap-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Nombre del Invitado</label>
+                <input type="text" required value={newGuestName} onChange={(e) => setNewGuestName(e.target.value)} placeholder="Nombre completo"
+                  className="w-full text-sm h-9 rounded-xl border-0 bg-white dark:bg-zinc-900 px-3.5 text-zinc-950 dark:text-white ring-1 ring-slate-200/80 dark:ring-white/5 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
               </div>
-              <div className="sm:col-span-2">
-                <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Género</label>
-                <select
-                  value={newGuestGender}
-                  onChange={(e) => setNewGuestGender(e.target.value as 'm' | 'f' | 'n')}
-                  className="w-full text-xs h-[42px] rounded-xl border-0 bg-white dark:bg-zinc-900 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/5 focus:ring-2 focus:ring-purple-500 focus:outline-none cursor-pointer shadow-sm"
-                >
+              <div className="col-span-4 sm:col-span-2 flex flex-col gap-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Cupos</label>
+                <input type="number" min={1} max={50} required value={newGuestSlots} onChange={(e) => setNewGuestSlots(parseInt(e.target.value) || 1)}
+                  className="w-full text-sm h-9 rounded-xl border-0 bg-white dark:bg-zinc-900 px-3.5 text-zinc-950 dark:text-white ring-1 ring-slate-200/80 dark:ring-white/5 focus:ring-2 focus:ring-violet-500 focus:outline-none font-mono" />
+              </div>
+              <div className="col-span-4 sm:col-span-2 flex flex-col gap-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Género</label>
+                <select value={newGuestGender} onChange={(e) => setNewGuestGender(e.target.value as 'm' | 'f' | 'n')}
+                  className="w-full text-sm h-9 rounded-xl border-0 bg-white dark:bg-zinc-900 px-3.5 text-zinc-950 dark:text-white ring-1 ring-slate-200/80 dark:ring-white/5 focus:ring-2 focus:ring-violet-500 focus:outline-none cursor-pointer">
                   <option value="n">Familia / N</option>
                   <option value="f">Femenino</option>
                   <option value="m">Masculino</option>
                 </select>
               </div>
-              <div className="sm:col-span-3">
-                <label className="block text-[9px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Celular (WhatsApp)</label>
-                <input
-                  type="tel"
-                  value={newGuestPhone}
-                  onChange={(e) => setNewGuestPhone(e.target.value)}
-                  placeholder="Celular (WhatsApp)"
-                  className="w-full text-xs h-[42px] rounded-xl border-0 bg-white dark:bg-zinc-900 py-0 px-4 text-zinc-950 dark:text-white ring-1 ring-zinc-200/80 dark:ring-white/5 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono shadow-sm"
-                />
+              <div className="col-span-4 sm:col-span-3 flex flex-col gap-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Celular (WhatsApp)</label>
+                <input type="tel" value={newGuestPhone} onChange={(e) => setNewGuestPhone(e.target.value)} placeholder="Celular (WhatsApp)"
+                  className="w-full text-sm h-9 rounded-xl border-0 bg-white dark:bg-zinc-900 px-3.5 text-zinc-950 dark:text-white ring-1 ring-slate-200/80 dark:ring-white/5 focus:ring-2 focus:ring-violet-500 focus:outline-none font-mono" />
               </div>
-              <div className="sm:col-span-1 flex flex-col justify-end">
-                <label className="hidden sm:block text-[9px] font-bold uppercase tracking-wider text-transparent mb-1.5">&nbsp;</label>
-                <button
-                  type="submit"
-                  disabled={addingGuest}
-                  className="w-full flex h-[42px] items-center justify-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold transition py-0 cursor-pointer disabled:opacity-50 shadow-sm shadow-purple-500/20"
-                >
-                  {addingGuest ? <Spinner className="animate-spin" size={16} /> : <Plus size={16} />}
+              <div className="col-span-12 sm:col-span-1 flex flex-col justify-end">
+                <button type="submit" disabled={addingGuest}
+                  className="w-full flex h-9 items-center justify-center rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold transition cursor-pointer disabled:opacity-50 shadow-sm shadow-violet-500/20 active:scale-[0.97]">
+                  {addingGuest ? <Spinner className="animate-spin" size={14} /> : <Plus size={14} />}
                 </button>
               </div>
             </form>
 
-            {/* Table / High Density List */}
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left text-sm text-zinc-600 dark:text-zinc-400">
+            {/* Table */}
+            <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-white/5">
+              <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-zinc-200/80 dark:border-white/5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                    <th className="py-4.5 px-5">Nombre del Invitado</th>
-                    <th className="py-4.5 px-5 text-center">Pases</th>
-                    <th className="py-4.5 px-5 text-center">Género</th>
-                    <th className="py-4.5 px-5">Contacto</th>
-                    <th className="py-4.5 px-5 text-center">RSVP</th>
-                    <th className="py-4.5 px-5 text-center">Asistirán</th>
-                    <th className="py-4.5 px-5">Mensaje</th>
-                    <th className="py-4.5 px-5 text-right">Acciones</th>
+                  <tr className="bg-slate-50/80 dark:bg-zinc-800/40">
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Nombre</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">Cupos</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">Género</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Contacto</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">RSVP</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-center">Asistirán</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Mensaje</th>
+                    <th className="py-3.5 px-5 text-[10px] font-bold uppercase tracking-wide text-zinc-600 dark:text-zinc-300 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-white/5">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                   {filteredGuests.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-12 text-center text-zinc-400 dark:text-zinc-500 font-sans text-sm">
+                      <td colSpan={8} className="py-12 text-center text-zinc-400 dark:text-zinc-500 text-xs">
                         No se encontraron invitados en esta lista.
                       </td>
                     </tr>
                   ) : (
                     filteredGuests.map((g) => (
-                      <tr key={g.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-950/20 group transition-colors duration-150">
-                        <td className="py-4 px-5 font-bold text-zinc-900 dark:text-white text-sm">
-                          <span>{g.name}</span>
-                        </td>
+                      <tr key={g.id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-950/30 group transition-colors duration-100">
+                        <td className="py-4 px-5 font-semibold text-zinc-900 dark:text-white text-xs">{g.name}</td>
                         <td className="py-4 px-5 text-center font-mono font-bold text-zinc-700 dark:text-zinc-300 text-xs">{g.max_slots}</td>
                         <td className="py-4 px-5 text-center">
-                          <span className="text-[10px] font-bold bg-zinc-200/50 dark:bg-zinc-900 px-2 py-0.5 rounded-lg border border-zinc-300/30 dark:border-white/5 text-zinc-700 dark:text-zinc-400">
+                          <span className="text-[9px] font-bold bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md text-zinc-600 dark:text-zinc-400">
                             {g.gender === 'm' ? 'H' : g.gender === 'f' ? 'M' : 'Fam'}
                           </span>
                         </td>
-                        <td className="py-4 px-5 font-mono text-zinc-500 text-xs">{g.phone_number || '-'}</td>
+                        <td className="py-4 px-5 font-mono text-zinc-500 dark:text-zinc-400 text-xs">{g.phone_number || '-'}</td>
                         <td className="py-4 px-5 text-center">
-                          <span className={`text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full inline-block ${
-                            g.rsvp_status === 'confirmed' 
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
-                              : g.rsvp_status === 'declined' 
-                              ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' 
-                              : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20'
+                          <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full inline-block ${
+                            g.rsvp_status === 'confirmed'
+                              ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400'
+                              : g.rsvp_status === 'declined'
+                              ? 'bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400'
+                              : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400'
                           }`}>
                             {g.rsvp_status === 'confirmed' ? 'Confirmado' : g.rsvp_status === 'declined' ? 'Declinó' : 'Pendiente'}
                           </span>
@@ -1043,28 +922,25 @@ export default function DashboardPage() {
                         <td className="py-4 px-5 text-center font-mono font-bold text-zinc-900 dark:text-white text-xs">
                           {g.rsvp_status === 'confirmed' ? g.attending_count : '-'}
                         </td>
-                        <td className="py-4 px-5 max-w-xs truncate text-zinc-500 dark:text-zinc-400 italic text-xs">
+                        <td className="py-4 px-5 max-w-[100px] truncate text-zinc-400 italic text-xs">
                           {g.guest_message || '-'}
                         </td>
                         <td className="py-4 px-5 text-right">
-                          <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition">
-                            <button
-                              onClick={() => copyInviteLink(g.id)}
-                              className={`p-2 rounded-xl border transition flex items-center justify-center cursor-pointer shadow-sm ${
+                          <div className="flex items-center justify-end gap-2">
+                            <button onClick={() => copyInviteLink(g.id)}
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer active:scale-[0.97] ${
                                 copiedId === g.id
-                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/40'
-                                  : 'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-white/5 hover:border-purple-500/30 hover:text-purple-600 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-700'
-                              }`}
-                              title="Copiar enlace único"
-                            >
-                              {copiedId === g.id ? <Check size={14} /> : <LinkIcon size={14} />}
+                                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-500/30'
+                                  : 'bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800/40 hover:bg-violet-600 hover:text-white hover:border-violet-600 shadow-sm'
+                              }`} title="Copiar enlace único">
+                              {copiedId === g.id ? <Check size={13} /> : <LinkIcon size={13} />}
+                              {copiedId === g.id ? 'Copiado' : 'Enlace'}
                             </button>
-                            <button
-                              onClick={() => handleDeleteGuest(g.id)}
-                              className="p-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 hover:border-red-500/40 text-zinc-500 dark:text-zinc-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition flex items-center justify-center cursor-pointer"
-                              title="Eliminar invitado"
-                            >
-                              <Trash size={14} />
+                            <button onClick={() => handleDeleteGuest(g.id)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-950/30 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800/40 hover:bg-red-500 hover:text-white hover:border-red-500 transition cursor-pointer active:scale-[0.97] shadow-sm"
+                              title="Eliminar invitado">
+                              <Trash size={13} />
+                              Eliminar
                             </button>
                           </div>
                         </td>
@@ -1074,46 +950,35 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
-
           </section>
 
-          {/* Bento Cell 4: Live RSVP Activity Feed */}
-          <section className="col-span-12 rounded-3xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/5 p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-colors duration-300">
-            
-            <div className="flex items-center gap-3.5 mb-6 border-b border-zinc-200/80 dark:border-white/5 pb-4">
-              <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                <Bell size={22} weight="duotone" />
-              </div>
-              <div>
-                <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Actividad en Vivo</h2>
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 font-sans mt-0.5">Historial de respuestas e interacciones</p>
-              </div>
-            </div>
+          {/* ── Activity Feed ── */}
+          <section className="col-span-12 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/60 dark:border-white/5 p-9 shadow-sm flex flex-col transition-colors duration-300">
+            <SectionHeader
+              icon={<div className="p-2.5 rounded-xl bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800/30"><Bell size={18} weight="duotone" /></div>}
+              title="Actividad en Vivo"
+              subtitle="Historial de respuestas RSVP en tiempo real"
+            />
 
-            <div className="space-y-4 max-h-72 overflow-y-auto pr-2">
-              {activities.length === 0 ? (
-                <p className="text-sm text-zinc-400 dark:text-zinc-500 italic py-6 text-center">Sin actividad registrada todavía.</p>
-              ) : (
-                activities.map((act) => (
-                  <div 
-                    key={`${act.id}-${act.time}`} 
-                    className="flex items-center justify-between text-sm bg-zinc-50 dark:bg-zinc-950/20 rounded-2xl p-4 border border-zinc-200/50 dark:border-white/5 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 shadow-sm dark:shadow-none transition"
-                  >
-                    <div className="flex items-center gap-3.5">
-                      <div className={`w-2 h-2 rounded-full ${
-                        act.type === 'confirm' ? 'bg-emerald-500' :
-                        act.type === 'decline' ? 'bg-red-500' : 'bg-purple-500'
-                      }`} />
-                      <div>
-                        <span className="font-bold text-zinc-900 dark:text-white mr-1.5">{act.guestName}</span>{' '}
-                        <span className="text-zinc-500 dark:text-zinc-400">{act.action}</span>
-                      </div>
-                    </div>
-                    <span className="text-xs text-zinc-400 dark:text-zinc-500 font-mono">{act.time}</span>
+            {activities.length === 0 ? (
+              <p className="text-sm text-zinc-400 dark:text-zinc-500 italic py-10 text-center">Sin actividad registrada todavía.</p>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                {activities.map((act) => (
+                  <div key={`${act.id}-${act.time}`}
+                    className="flex items-center gap-4 w-full bg-slate-50/60 dark:bg-zinc-950/30 rounded-2xl px-6 py-4 border border-slate-100 dark:border-white/[0.04] hover:bg-slate-100/60 dark:hover:bg-zinc-950/60 transition">
+                    <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                      act.type === 'confirm' ? 'bg-emerald-500' :
+                      act.type === 'decline' ? 'bg-red-500' : 'bg-violet-500'
+                    }`} />
+                    <span className="text-sm font-bold text-zinc-900 dark:text-white shrink-0">{act.guestName}</span>
+                    <span className="text-zinc-300 dark:text-zinc-600 shrink-0">·</span>
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400 flex-1 truncate">{act.action}</span>
+                    <span className="text-xs text-zinc-400 dark:text-zinc-500 font-mono shrink-0">{act.time}</span>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
 
         </div>

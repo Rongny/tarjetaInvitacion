@@ -46,7 +46,17 @@ export default function RegisterPage() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        router.push('/dashboard');
+        const { data: profile } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        if (profile?.role === 'admin') {
+          router.push('/admin');
+        } else {
+          const accessUntil = profile?.access_until ? new Date(profile.access_until) : null;
+          router.push(accessUntil && accessUntil > new Date() ? '/dashboard' : '/sin-acceso?motivo=' + (accessUntil ? 'expirado' : 'pendiente'));
+        }
       }
     };
     checkUser();
@@ -80,19 +90,12 @@ export default function RegisterPage() {
         return;
       }
 
-      setSuccessMsg('Registro exitoso. Iniciando sesión...');
-      // Sign in automatically
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        throw signInError;
-      }
+      setSuccessMsg('Registro exitoso. Tu cuenta está pendiente de activación.');
+      // Sign in automatically so the session exists for future visits
+      await supabase.auth.signInWithPassword({ email, password });
 
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/sin-acceso?motivo=pendiente');
       }, 1200);
     } catch (err) {
       setSuccessMsg(''); // Clear success message if error occurs

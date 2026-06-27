@@ -19,25 +19,25 @@ const StarOrnament = () => (
 
 const GoldDivider = () => (
   <div className="flex items-center justify-center gap-4 w-full" style={{ marginTop: '35px', marginBottom: '35px' }} aria-hidden="true">
-    <span className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent to-primary/30"></span>
-    <div className="flex items-center gap-2 text-primary/60">
+    <span className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent" style={{ backgroundImage: 'linear-gradient(to right, transparent, rgba(var(--primary-rgb), 0.30))' }}></span>
+    <div className="flex items-center gap-2" style={{ color: 'rgba(var(--primary-rgb), 0.60)' }}>
       <StarOrnament />
       <span className="font-script text-2xl text-primary leading-none -mt-1">XV</span>
       <StarOrnament />
     </div>
-    <span className="h-px flex-1 max-w-[80px] bg-gradient-to-l from-transparent to-primary/30"></span>
+    <span className="h-px flex-1 max-w-[80px]" style={{ backgroundImage: 'linear-gradient(to left, transparent, rgba(var(--primary-rgb), 0.30))' }}></span>
   </div>
 );
 
 const ShimmerStars = () => (
   <svg viewBox="0 0 200 200" fill="none" className="pointer-events-none absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 animate-shimmer opacity-50" aria-hidden="true">
-    <g transform="translate(20 30) scale(1)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
-    <g transform="translate(60 80) scale(0.7)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
-    <g transform="translate(120 40) scale(1.2)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
-    <g transform="translate(170 90) scale(0.8)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
-    <g transform="translate(90 130) scale(1)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
-    <g transform="translate(150 160) scale(0.9)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
-    <g transform="translate(30 170) scale(1.1)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="oklch(0.78 0.10 85)" opacity="0.7"></path></g>
+    <g transform="translate(20 30) scale(1)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
+    <g transform="translate(60 80) scale(0.7)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
+    <g transform="translate(120 40) scale(1.2)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
+    <g transform="translate(170 90) scale(0.8)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
+    <g transform="translate(90 130) scale(1)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
+    <g transform="translate(150 160) scale(0.9)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
+    <g transform="translate(30 170) scale(1.1)"><path d="M0 -6 L 1.5 -1.5 L 6 0 L 1.5 1.5 L 0 6 L -1.5 1.5 L -6 0 L -1.5 -1.5 Z" fill="var(--gold)" opacity="0.7"></path></g>
   </svg>
 );
 
@@ -188,22 +188,57 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
   // Dynamic Theme Configuration
   const themeColors = event.theme_colors || {};
+
+  const hexToRgb = (hex: string) => {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+  };
+  const lighten = (hex: string, amount: number) => {
+    const h = hex.replace('#', '');
+    const r = Math.round(parseInt(h.slice(0, 2), 16) + (255 - parseInt(h.slice(0, 2), 16)) * amount);
+    const g = Math.round(parseInt(h.slice(2, 4), 16) + (255 - parseInt(h.slice(2, 4), 16)) * amount);
+    const b = Math.round(parseInt(h.slice(4, 6), 16) + (255 - parseInt(h.slice(4, 6), 16)) * amount);
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
+  const p = themeColors.primary || '#4a2a6b';
+  const s = themeColors.secondary || '#9964c4';
+  const a = themeColors.accent || '#bf8ce0';
+  const g = themeColors.gold || '#d4b26f';
+
+  const accentSoft = themeColors.accent_soft || lighten(a, 0.82);
+  const bgMain = themeColors.bg_main || lighten(p, 0.96);
+  const textMain = themeColors.text_main || lighten(p, 0.12);
+  const textMuted = themeColors.text_muted || lighten(p, 0.38);
+
   const themeStyles = {
-    '--primary': themeColors.primary || '#4a2a6b',
-    '--primary-rgb': themeColors.primary_rgb || '74, 42, 107',
-    '--secondary': themeColors.secondary || '#9964c4',
-    '--secondary-rgb': themeColors.secondary_rgb || '153, 100, 196',
-    '--accent': themeColors.accent || '#bf8ce0',
-    '--accent-rgb': themeColors.accent_rgb || '191, 140, 224',
-    '--accent-soft': themeColors.accent_soft || '#f4e8f9',
-    '--bg-main': themeColors.bg_main || '#fbf7fb',
-    '--text-main': themeColors.text_main || '#2c1a3f',
-    '--text-muted': themeColors.text_muted || '#6b5883',
-    '--gold': themeColors.gold || '#d4b26f',
+    '--primary': p,
+    '--primary-rgb': themeColors.primary_rgb || hexToRgb(p),
+    '--secondary': s,
+    '--secondary-rgb': themeColors.secondary_rgb || hexToRgb(s),
+    '--accent': a,
+    '--accent-rgb': themeColors.accent_rgb || hexToRgb(a),
+    '--accent-soft': accentSoft,
+    '--bg-main': bgMain,
+    '--text-main': textMain,
+    '--text-muted': textMuted,
+    '--gold': g,
     '--seal-base': themeColors.seal_base || '#a10015',
     '--seal-medium': themeColors.seal_medium || '#fa5d36',
     '--seal-highlight': themeColors.seal_highlight || '#ffc9a0',
     '--seal-text': themeColors.seal_text || '#fff0da',
+    // Override Tailwind token vars directly so text-primary, text-secondary, etc. work
+    '--color-primary': p,
+    '--color-secondary': s,
+    '--color-accent': a,
+    '--color-accent-soft': accentSoft,
+    '--color-muted-foreground': textMuted,
+    '--color-foreground': textMain,
+    '--color-background': bgMain,
+    '--color-card': '#ffffff',
   } as React.CSSProperties;
 
   // Gender agreement texts
@@ -457,7 +492,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         {/* ── Section 1: HERO / PORTADA ───────────────────────────────────── */}
         <section className="hero-section">
           {/* Hero gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 via-background/60 to-background" aria-hidden="true"></div>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(var(--secondary-rgb), 0.5), rgba(var(--secondary-rgb), 0.08), var(--bg-main))' }} aria-hidden="true"></div>
 
           {/* Corner flowers */}
           <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(1, 1)' }} />
@@ -467,16 +502,16 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
           {/* Floating butterflies */}
           <svg viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg" className="pointer-events-none absolute left-[10%] top-[28%] h-8 w-10 animate-butterfly opacity-75 sm:h-10 sm:w-12" aria-hidden="true">
-            <path d="M30 18 C30 18 20 5 12 5 C4 5 1 12 8 20 C1 28 4 35 12 35 C20 35 30 18 30 18 Z" fill="oklch(0.78 0.10 305)" opacity="0.88"></path>
-            <path d="M30 18 C30 18 40 5 48 5 C56 5 59 12 52 20 C59 28 56 35 48 35 C40 35 30 18 30 18 Z" fill="oklch(0.78 0.10 305)" opacity="0.88"></path>
-            <ellipse cx="30" cy="18" rx="1.6" ry="11" fill="oklch(0.30 0.05 305)"></ellipse>
-            <path d="M30 18 Q 27 10 23 8" stroke="oklch(0.30 0.05 305)" strokeWidth="0.8" fill="none" strokeLinecap="round"></path>
-            <path d="M30 18 Q 33 10 37 8" stroke="oklch(0.30 0.05 305)" strokeWidth="0.8" fill="none" strokeLinecap="round"></path>
+            <path d="M30 18 C30 18 20 5 12 5 C4 5 1 12 8 20 C1 28 4 35 12 35 C20 35 30 18 30 18 Z" fill="var(--accent)" opacity="0.88"></path>
+            <path d="M30 18 C30 18 40 5 48 5 C56 5 59 12 52 20 C59 28 56 35 48 35 C40 35 30 18 30 18 Z" fill="var(--accent)" opacity="0.88"></path>
+            <ellipse cx="30" cy="18" rx="1.6" ry="11" fill="var(--primary)"></ellipse>
+            <path d="M30 18 Q 27 10 23 8" stroke="var(--primary)" strokeWidth="0.8" fill="none" strokeLinecap="round"></path>
+            <path d="M30 18 Q 33 10 37 8" stroke="var(--primary)" strokeWidth="0.8" fill="none" strokeLinecap="round"></path>
           </svg>
           <svg viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg" className="pointer-events-none absolute right-[12%] top-[52%] h-7 w-9 animate-butterfly opacity-65 sm:h-9 sm:w-11" style={{ animationDelay: '1.5s' }} aria-hidden="true">
-            <path d="M30 18 C30 18 20 5 12 5 C4 5 1 12 8 20 C1 28 4 35 12 35 C20 35 30 18 30 18 Z" fill="oklch(0.78 0.10 305)" opacity="0.88"></path>
-            <path d="M30 18 C30 18 40 5 48 5 C56 5 59 12 52 20 C59 28 56 35 48 35 C40 35 30 18 30 18 Z" fill="oklch(0.78 0.10 305)" opacity="0.88"></path>
-            <ellipse cx="30" cy="18" rx="1.6" ry="11" fill="oklch(0.30 0.05 305)"></ellipse>
+            <path d="M30 18 C30 18 20 5 12 5 C4 5 1 12 8 20 C1 28 4 35 12 35 C20 35 30 18 30 18 Z" fill="var(--accent)" opacity="0.88"></path>
+            <path d="M30 18 C30 18 40 5 48 5 C56 5 59 12 52 20 C59 28 56 35 48 35 C40 35 30 18 30 18 Z" fill="var(--accent)" opacity="0.88"></path>
+            <ellipse cx="30" cy="18" rx="1.6" ry="11" fill="var(--primary)"></ellipse>
           </svg>
 
           {/* Hero Content */}
@@ -501,9 +536,9 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
 
             {/* Photo frame */}
             <div className="relative w-full max-w-[260px] sm:max-w-[300px]" style={{ marginTop: '45px', marginBottom: '45px' }}>
-              <div className="absolute -inset-3 rounded-[2rem] border border-primary/25" aria-hidden="true"></div>
-              <div className="absolute -inset-1 rounded-[1.6rem] border border-accent/35" aria-hidden="true"></div>
-              <div className="relative aspect-[3/4] overflow-hidden rounded-[1.4rem] shadow-2xl shadow-primary/20">
+              <div className="absolute -inset-3 rounded-[2rem] border" style={{ borderColor: 'rgba(var(--primary-rgb), 0.25)' }} aria-hidden="true"></div>
+              <div className="absolute -inset-1 rounded-[1.6rem] border" style={{ borderColor: 'rgba(var(--accent-rgb), 0.35)' }} aria-hidden="true"></div>
+              <div className="relative aspect-[3/4] overflow-hidden rounded-[1.4rem]" style={{ boxShadow: '0 25px 50px -12px rgba(var(--primary-rgb), 0.20)' }}>
                 <img
                   alt={`Vestido de XV años de ${event.host_name}`}
                   decoding="async"
@@ -511,7 +546,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
                   style={{ position: 'absolute', height: '100%', width: '100%', left: 0, top: 0, right: 0, bottom: 0, color: 'transparent' }}
                   src="/hero-optimized.webp"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/25 via-transparent to-transparent" aria-hidden="true"></div>
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(var(--primary-rgb), 0.25), transparent)' }} aria-hidden="true"></div>
               </div>
             </div>
 
@@ -586,7 +621,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         </section>
 
         {/* ── Section 3: CUENTA REGRESIVA ────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-secondary/35">
+        <section className="relative overflow-hidden" style={{ backgroundColor: 'rgba(var(--secondary-rgb), 0.35)' }}>
           <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
           <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
           <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
@@ -690,7 +725,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         </section>
 
         {/* ── Section 5: DRESS CODE ───────────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-secondary/30">
+        <section className="relative overflow-hidden" style={{ backgroundColor: 'rgba(var(--secondary-rgb), 0.30)' }}>
           <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
           <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
           <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
@@ -710,23 +745,24 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
             <div className="flex items-center justify-center gap-12 sm:gap-16 mb-10">
               <div className="flex flex-col items-center gap-3">
                 <div
-                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full border-2 border-primary/30 shadow-lg shadow-primary/15 flex items-center justify-center text-white/90"
-                  style={{ backgroundColor: 'oklch(0.72 0.13 305)' }}
-                  aria-label="Color lila reservado"
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full border-2 flex items-center justify-center text-white/90"
+                  style={{ backgroundColor: 'var(--primary)', borderColor: 'rgba(var(--primary-rgb), 0.50)', boxShadow: '0 10px 15px -3px rgba(var(--primary-rgb), 0.30)' }}
+                  aria-label="Color reservado"
                 >
                   <CrossIcon />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-primary font-bold">Lila</p>
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-primary font-bold">{event.theme_colors?.reserved_color_name || 'Lila'}</p>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-red-500 font-bold mt-0.5">Reservado</p>
                 </div>
               </div>
 
-              <div className="h-16 w-px bg-primary/20" aria-hidden="true"></div>
+              <div className="h-16 w-px" style={{ backgroundColor: 'rgba(var(--primary-rgb), 0.20)' }} aria-hidden="true"></div>
 
               <div className="flex flex-col items-center gap-3">
                 <div
-                  className="h-16 w-16 sm:h-20 sm:w-20 flex items-center justify-center rounded-full border-2 border-primary/25 bg-primary/5 shadow-lg shadow-primary/10"
+                  className="h-16 w-16 sm:h-20 sm:w-20 flex items-center justify-center rounded-full border-2"
+                  style={{ borderColor: 'rgba(var(--primary-rgb), 0.25)', backgroundColor: 'rgba(var(--primary-rgb), 0.05)', boxShadow: '0 10px 15px -3px rgba(var(--primary-rgb), 0.10)' }}
                   aria-label="Vestimenta Formal"
                 >
                   <TuxedoIcon />
@@ -763,8 +799,8 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
             {/* Floating envelope icon */}
             <div className="flex justify-center mb-10">
               <div className="relative">
-                <div className="absolute inset-0 animate-shimmer rounded-full bg-primary/15 blur-2xl" aria-hidden="true"></div>
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-primary/25 bg-card shadow-xl shadow-primary/10 animate-float-slow">
+                <div className="absolute inset-0 animate-shimmer rounded-full blur-2xl" style={{ backgroundColor: 'rgba(var(--primary-rgb), 0.15)' }} aria-hidden="true"></div>
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-full border bg-card animate-float-slow" style={{ borderColor: 'rgba(var(--primary-rgb), 0.25)', boxShadow: '0 20px 25px -5px rgba(var(--primary-rgb), 0.10)' }}>
                   <EnvelopeGiftIcon />
                 </div>
               </div>
@@ -784,7 +820,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         </section>
 
         {/* ── Section 7: COMPARTE EL RECUERDO ─────────────────────────────── */}
-        <section className="relative overflow-hidden bg-secondary/35">
+        <section className="relative overflow-hidden" style={{ backgroundColor: 'rgba(var(--secondary-rgb), 0.35)' }}>
           <CornerDecor className="pointer-events-none absolute top-0 left-0 h-44 w-44 sm:h-56 sm:w-56" />
           <CornerDecor className="pointer-events-none absolute top-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleX(-1)' }} />
           <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
@@ -815,7 +851,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
                   decoding="async"
                   className="qr-code-img"
                   style={{ color: 'transparent' }}
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&color=4A2A6B&bgcolor=FBF7FB&data=${encodeURIComponent(event.photos_folder_url || 'https://photos.app.goo.gl/WNkq2bs2K4JbYF4o6')}`}
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&color=${p.replace('#', '')}&bgcolor=FFFFFF&data=${encodeURIComponent(event.photos_folder_url || 'https://photos.app.goo.gl/WNkq2bs2K4JbYF4o6')}`}
                 />
               </div>
             </div>
@@ -905,7 +941,8 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
                     setIsSubmitted(false);
                     setShowRsvpModal(true);
                   }}
-                  className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all outline-none px-6 h-14 rounded-full bg-primary text-white hover:bg-primary/90 active:scale-[0.98] shadow-xl shadow-primary/25 text-base tracking-wide"
+                  className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all outline-none px-6 h-14 rounded-full text-white active:scale-[0.98] text-base tracking-wide"
+                  style={{ backgroundColor: 'var(--primary)', boxShadow: '0 20px 25px -5px rgba(var(--primary-rgb), 0.25)' }}
                 >
                   <WhatsAppIcon />
                   {currentRsvpStatus === 'pending' ? 'Confirmar Asistencia' : 'Modificar Confirmación'}
@@ -932,7 +969,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
             
             <p className="font-script text-5xl text-primary" style={{ marginTop: '30px', marginBottom: '24px' }}>Te espero</p>
 
-            <p className="text-[11px] font-display uppercase tracking-[0.45em] text-primary/70 font-semibold" style={{ marginBottom: '18px' }}>
+            <p className="text-[11px] font-display uppercase tracking-[0.45em] font-semibold" style={{ marginBottom: '18px', color: 'rgba(var(--primary-rgb), 0.70)' }}>
               {event.host_name} · XV AÑOS
             </p>
 

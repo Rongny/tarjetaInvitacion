@@ -8,6 +8,8 @@ CREATE TABLE public.clients (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT NOT NULL,
     business_name TEXT,
+    role TEXT NOT NULL DEFAULT 'client',           -- 'client' | 'admin'
+    access_until TIMESTAMP WITH TIME ZONE DEFAULT NULL, -- NULL = no access yet
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -20,6 +22,21 @@ CREATE POLICY "Allow client to read own data" ON public.clients
 
 CREATE POLICY "Allow client to update own data" ON public.clients
     FOR UPDATE USING (auth.uid() = id);
+
+-- Admin can read ALL clients (additive OR with the above SELECT policy)
+CREATE POLICY "Allow admin to read all clients" ON public.clients
+    FOR SELECT USING (
+        (SELECT role FROM public.clients WHERE id = auth.uid()) = 'admin'
+    );
+
+-- Admin can update ANY client (to set access_until and role)
+CREATE POLICY "Allow admin to update any client" ON public.clients
+    FOR UPDATE USING (
+        (SELECT role FROM public.clients WHERE id = auth.uid()) = 'admin'
+    );
+
+-- After running this script, promote the admin user:
+-- UPDATE public.clients SET role = 'admin', access_until = '2099-12-31' WHERE email = 'rongnysierra@gmail.com';
 
 -- 2. Create EVENTS table
 CREATE TABLE public.events (

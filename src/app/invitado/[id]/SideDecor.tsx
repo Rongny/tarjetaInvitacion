@@ -27,18 +27,18 @@ export default function SideDecor({ className = "pointer-events-none absolute to
         </g>
         {/* Flowers */}
         <g transform="translate(10, -5) scale(1.1)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.45" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.45" fill="var(--gold)" />
         </g>
         <g transform="translate(-12, 10) scale(0.85)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.09" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--secondary)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--secondary)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--secondary)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--secondary)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.09" fill="var(--gold)" />
         </g>
       </g>
 
@@ -51,11 +51,11 @@ export default function SideDecor({ className = "pointer-events-none absolute to
           <path d="M0 0 Q 12 -8 28 -2 Q 16 8 0 0 Z" fill="oklch(0.62 0.11 145)" opacity="0.65" />
         </g>
         <g transform="translate(15, 10) scale(1)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.45" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.45" fill="var(--gold)" />
         </g>
       </g>
 
@@ -68,18 +68,18 @@ export default function SideDecor({ className = "pointer-events-none absolute to
           <path d="M0 0 Q 12 -8 28 -2 Q 16 8 0 0 Z" fill="oklch(0.62 0.11 145)" opacity="0.65" />
         </g>
         <g transform="translate(-10, -8) scale(1.1)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.45" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.45" fill="var(--gold)" />
         </g>
         <g transform="translate(12, 12) scale(0.85)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.58 0.15 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.58 0.15 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.58 0.15 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.58 0.15 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.09" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--primary)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--primary)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--primary)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--primary)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.09" fill="var(--gold)" />
         </g>
       </g>
 
@@ -92,11 +92,11 @@ export default function SideDecor({ className = "pointer-events-none absolute to
           <path d="M0 0 Q 12 -8 28 -2 Q 16 8 0 0 Z" fill="oklch(0.62 0.11 145)" opacity="0.65" />
         </g>
         <g transform="translate(8, -12) scale(0.95)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.45" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.45" fill="var(--gold)" />
         </g>
       </g>
 
@@ -109,18 +109,18 @@ export default function SideDecor({ className = "pointer-events-none absolute to
           <path d="M0 0 Q 12 -8 28 -2 Q 16 8 0 0 Z" fill="oklch(0.62 0.11 145)" opacity="0.65" />
         </g>
         <g transform="translate(-12, 5) scale(1)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.78 0.10 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.45" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--accent)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.45" fill="var(--gold)" />
         </g>
         <g transform="translate(10, -10) scale(0.9)">
-          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="oklch(0.68 0.13 305)" opacity="0.88" />
-          <circle cx="0" cy="0" r="2.09" fill="oklch(0.92 0.04 95)" />
+          <ellipse cx="0" cy="-3.85" rx="3.5" ry="4.9" fill="var(--secondary)" opacity="0.88" />
+          <ellipse cx="0" cy="3.85" rx="3.5" ry="4.9" fill="var(--secondary)" opacity="0.88" />
+          <ellipse cx="-3.85" cy="0" rx="4.9" ry="3.5" fill="var(--secondary)" opacity="0.88" />
+          <ellipse cx="3.85" cy="0" rx="4.9" ry="3.5" fill="var(--secondary)" opacity="0.88" />
+          <circle cx="0" cy="0" r="2.09" fill="var(--gold)" />
         </g>
       </g>
     </svg>

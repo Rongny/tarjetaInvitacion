@@ -30,6 +30,7 @@ interface EventData {
   location_map_url: string;
   photos_folder_url: string;
   background_music_url: string;
+  hero_image_url?: string | null;
   theme_colors: {
     primary?: string;
     secondary?: string;
@@ -99,6 +100,9 @@ export default function DashboardPage() {
   const [editReservedColorName, setEditReservedColorName] = useState('Lila');
   const [savingEvent, setSavingEvent] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [editHeroImageUrl, setEditHeroImageUrl] = useState('');
+  const [heroFile, setHeroFile] = useState<File | null>(null);
+  const [heroPreview, setHeroPreview] = useState<string | null>(null);
 
   const [originUrl, setOriginUrl] = useState('');
 
@@ -233,6 +237,9 @@ export default function DashboardPage() {
         setEditLocationMapUrl(activeEvent.location_map_url || '');
         setEditBackgroundMusicUrl(activeEvent.background_music_url || '');
         setEditPhotosFolderUrl(activeEvent.photos_folder_url || '');
+        setEditHeroImageUrl(activeEvent.hero_image_url || '');
+        setHeroFile(null);
+        setHeroPreview(null);
         setEditColorPrimary(activeEvent.theme_colors?.primary || '#4a2a6b');
         setEditColorSecondary(activeEvent.theme_colors?.secondary || '#9964c4');
         setEditColorAccent(activeEvent.theme_colors?.accent || '#bf8ce0');
@@ -418,6 +425,28 @@ export default function DashboardPage() {
 
     setSavingEvent(true);
     try {
+      let finalHeroImageUrl = editHeroImageUrl;
+
+      if (heroFile) {
+        const fileExt = heroFile.name.split('.').pop();
+        const fileName = `${event.id}/hero-${Date.now()}.${fileExt}`;
+
+        const { data: uploadData, error: uploadErr } = await supabase.storage
+          .from('event-images')
+          .upload(fileName, heroFile, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('event-images')
+          .getPublicUrl(fileName);
+
+        finalHeroImageUrl = publicUrl;
+      }
+
       const { data, error } = await supabase
         .from('events')
         .update({
@@ -428,6 +457,7 @@ export default function DashboardPage() {
           location_map_url: editLocationMapUrl || null,
           background_music_url: editBackgroundMusicUrl || null,
           photos_folder_url: editPhotosFolderUrl || null,
+          hero_image_url: finalHeroImageUrl || null,
           theme_colors: {
             primary: editColorPrimary,
             secondary: editColorSecondary,
@@ -442,6 +472,9 @@ export default function DashboardPage() {
 
       if (error) throw error;
       setEvent(data);
+      setEditHeroImageUrl(data.hero_image_url || '');
+      setHeroFile(null);
+      setHeroPreview(null);
       setEditingEvent(false);
     } catch (err) {
       console.error('Error updating event:', err);
@@ -782,6 +815,33 @@ export default function DashboardPage() {
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Galería de Fotos</label>
                     <input type="url" value={editPhotosFolderUrl} onChange={(e) => setEditPhotosFolderUrl(e.target.value)} placeholder="https://drive.google.com/..."
                       className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+                  <div className="sm:col-span-2 flex flex-col gap-1.5">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Foto de Portada (Invitación)</label>
+                    <div className="flex items-center gap-4 bg-slate-50 dark:bg-zinc-950 p-4 rounded-xl ring-1 ring-slate-200/80 dark:ring-white/5">
+                      <div className="w-12 h-16 bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-white/10 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+                        {heroPreview || editHeroImageUrl ? (
+                          <img src={heroPreview || editHeroImageUrl} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[9px] text-zinc-400">Sin foto</span>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1 w-full">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setHeroFile(file);
+                              setHeroPreview(URL.createObjectURL(file));
+                            }
+                          }}
+                          className="text-xs text-zinc-500 dark:text-zinc-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-violet-50 file:text-violet-700 dark:file:bg-violet-950/30 dark:file:text-violet-400 hover:file:bg-violet-100 cursor-pointer w-full"
+                        />
+                        <p className="text-[9px] text-zinc-450 dark:text-zinc-500">Recomendado: Proporción vertical (3:4). Se guardará en Supabase Storage.</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

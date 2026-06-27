@@ -117,6 +117,7 @@ interface EventDetails {
   photos_folder_url: string;
   background_music_url: string;
   theme_colors: Record<string, string>;
+  hero_image_url?: string | null;
 }
 
 interface Guest {
@@ -544,7 +545,7 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
                   decoding="async"
                   className="object-cover"
                   style={{ position: 'absolute', height: '100%', width: '100%', left: 0, top: 0, right: 0, bottom: 0, color: 'transparent' }}
-                  src="/hero-optimized.webp"
+                  src={event.hero_image_url || "/hero-optimized.webp"}
                 />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(var(--primary-rgb), 0.25), transparent)' }} aria-hidden="true"></div>
               </div>

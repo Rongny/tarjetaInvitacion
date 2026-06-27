@@ -965,6 +965,7 @@ export default function DashboardPage() {
                     {addingGuest ? <Spinner className="animate-spin" size={18} /> : <Plus size={18} />}
                   </button>
                 </div>
+              </form>
               {/* Table / High Density List */}
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm text-zinc-600 dark:text-zinc-400">

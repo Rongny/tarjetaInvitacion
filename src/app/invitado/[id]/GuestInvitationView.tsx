@@ -908,11 +908,26 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
               </div>
             </div>
 
-            {/* Footer ornament */}
-            <div className="mt-14 flex flex-col items-center justify-center gap-3">
-              <div className="h-px w-24 bg-primary/20" aria-hidden="true"></div>
-              <p className="text-[10px] uppercase tracking-[0.45em] text-primary/50">XV Años · {event.host_name}</p>
-            </div>
+          </div>
+        </section>
+
+        {/* ── Section 9: FINAL FOOTER SECTION ───────────────────────────────── */}
+        <section className="relative overflow-hidden bg-secondary/30" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+          <CornerDecor className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scaleY(-1)' }} />
+          <CornerDecor className="pointer-events-none absolute bottom-0 right-0 h-44 w-44 sm:h-56 sm:w-56" style={{ transform: 'scale(-1, -1)' }} />
+
+          <div className="relative mx-auto max-w-xl text-center px-6">
+            <GoldDivider />
+            
+            <p className="font-script text-5xl text-primary mt-6 mb-8">Te espero</p>
+
+            <p className="text-[11px] font-display uppercase tracking-[0.45em] text-primary/70 font-semibold">
+              {event.host_name} · XV AÑOS
+            </p>
+
+            <p className="text-xs font-serif italic text-muted-foreground mt-4">
+              {event.event_date ? event.event_date.split('T')[0].split('-').reverse().join(' - ') : ''}
+            </p>
           </div>
         </section>
 

@@ -375,13 +375,31 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
         .update({ rsvp_status: rsvpStatus, attending_count: finalCount, guest_message: guestMessage })
         .eq('id', guest.id);
       if (error) throw error;
+      
       setCurrentRsvpStatus(rsvpStatus);
       setCurrentAttendingCount(finalCount);
       setIsSubmitted(true);
+
+      const targetPhone = event.whatsapp_phone || '573015181018';
+      const defaultConfirmTemplate = '¡Hola {nombre_anfitrion}!\n\nSoy *{nombre_invitado}* y confirmo con mucha alegría mi asistencia a tu fiesta de XV Años. Reservé *{cupos}* cupo(s).\n\n¡Ahí estaré sin falta!';
+      const defaultDeclineTemplate = '¡Hola {nombre_anfitrion}!\n\nSoy *{nombre_invitado}*. Con mucha pena te escribo para contarte que no podré asistir a tu fiesta de XV Años. Te deseo una noche espectacular y te envío un fuerte abrazo.';
+
+      const confirmTmpl = event.whatsapp_confirm_message || defaultConfirmTemplate;
+      const declineTmpl = event.whatsapp_decline_message || defaultDeclineTemplate;
+
+      const activeTmpl = rsvpStatus === 'confirmed' ? confirmTmpl : declineTmpl;
+      const parsedMsg = activeTmpl
+        .replace(/{nombre_anfitrion}/g, event.host_name)
+        .replace(/{nombre_invitado}/g, guest.name)
+        .replace(/{cupos}/g, String(finalCount));
+
+      const targetUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(parsedMsg)}`;
+
       setTimeout(() => {
         setShowRsvpModal(false);
         setIsSubmitted(false);
-      }, 1800);
+        window.location.href = targetUrl;
+      }, 1500);
     } catch (err) {
       console.error('Error submitting RSVP:', err);
       setSubmitError(err instanceof Error ? err.message : 'Error al enviar. Por favor intenta de nuevo.');

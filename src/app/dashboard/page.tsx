@@ -887,23 +887,10 @@ export default function DashboardPage() {
                   <div className="sm:col-span-2 border-t border-slate-100 dark:border-white/5 pt-4 flex flex-col gap-3">
                     <h4 className="text-[11px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">Confirmación por WhatsApp</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-1.5">
+                      <div className="flex flex-col gap-1.5 sm:col-span-2">
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Número de WhatsApp (con código de país sin +)</label>
                         <input type="text" value={editWhatsappPhone} onChange={(e) => setEditWhatsappPhone(e.target.value)} placeholder="Ej: 573015181018"
                           className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
-                      </div>
-                      <div className="hidden sm:block"></div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Mensaje para Asistiré (WhatsApp)</label>
-                        <textarea value={editWhatsappConfirmMessage} onChange={(e) => setEditWhatsappConfirmMessage(e.target.value)} rows={3} placeholder="Mensaje predeterminado de confirmación..."
-                          className="w-full text-xs p-3 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none" />
-                        <p className="text-[9px] text-zinc-400">Puedes usar: {"{nombre_anfitrion}"}, {"{nombre_invitado}"}, {"{cupos}"}</p>
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Mensaje para No Asistiré (WhatsApp)</label>
-                        <textarea value={editWhatsappDeclineMessage} onChange={(e) => setEditWhatsappDeclineMessage(e.target.value)} rows={3} placeholder="Mensaje predeterminado de inasistencia..."
-                          className="w-full text-xs p-3 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none" />
-                        <p className="text-[9px] text-zinc-400">Puedes usar: {"{nombre_anfitrion}"}, {"{nombre_invitado}"}</p>
                       </div>
                     </div>
                   </div>

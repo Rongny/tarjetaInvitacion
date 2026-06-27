@@ -118,6 +118,9 @@ interface EventDetails {
   background_music_url: string;
   theme_colors: Record<string, string>;
   hero_image_url?: string | null;
+  whatsapp_phone?: string | null;
+  whatsapp_confirm_message?: string | null;
+  whatsapp_decline_message?: string | null;
 }
 
 interface Guest {
@@ -398,10 +401,22 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
     setFormattedTime(eventDateObj.toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', hour12: true }));
   }, [event.event_date]);
 
-  const whatsappNumber = '573015181018';
+  const whatsappNumber = event.whatsapp_phone || '573015181018';
+  const defaultConfirmTemplate = '¡Hola {nombre_anfitrion}!\n\nSoy *{nombre_invitado}* y confirmo con mucha alegría mi asistencia a tu fiesta de XV Años. Reservé *{cupos}* cupo(s).\n\n¡Ahí estaré sin falta!';
+  const defaultDeclineTemplate = '¡Hola {nombre_anfitrion}!\n\nSoy *{nombre_invitado}*. Con mucha pena te escribo para contarte que no podré asistir a tu fiesta de XV Años. Te deseo una noche espectacular y te envío un fuerte abrazo.';
+
+  const confirmTemplate = event.whatsapp_confirm_message || defaultConfirmTemplate;
+  const declineTemplate = event.whatsapp_decline_message || defaultDeclineTemplate;
+
   const rsvpMessage = rsvpStatus === 'confirmed'
-    ? `¡Hola ${event.host_name}!\n\nSoy *${guest.name}* y confirmo con mucha alegría mi asistencia a tu fiesta de XV Años. Reservé *${attendingCount}* cupo(s).\n\n¡Ahí estaré sin falta!`
-    : `¡Hola ${event.host_name}!\n\nSoy *${guest.name}*. Con mucha pena te escribo para contarte que no podré asistir a tu fiesta de XV Años. Te deseo una noche espectacular y te envío un fuerte abrazo.`;
+    ? confirmTemplate
+        .replace(/{nombre_anfitrion}/g, event.host_name)
+        .replace(/{nombre_invitado}/g, guest.name)
+        .replace(/{cupos}/g, String(attendingCount))
+    : declineTemplate
+        .replace(/{nombre_anfitrion}/g, event.host_name)
+        .replace(/{nombre_invitado}/g, guest.name);
+
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(rsvpMessage)}`;
 
   return (

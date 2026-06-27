@@ -31,6 +31,9 @@ interface EventData {
   photos_folder_url: string;
   background_music_url: string;
   hero_image_url?: string | null;
+  whatsapp_phone?: string | null;
+  whatsapp_confirm_message?: string | null;
+  whatsapp_decline_message?: string | null;
   theme_colors: {
     primary?: string;
     secondary?: string;
@@ -103,6 +106,12 @@ export default function DashboardPage() {
   const [editHeroImageUrl, setEditHeroImageUrl] = useState('');
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [heroPreview, setHeroPreview] = useState<string | null>(null);
+
+  const [editWhatsappPhone, setEditWhatsappPhone] = useState('');
+  const [editWhatsappConfirmMessage, setEditWhatsappConfirmMessage] = useState('');
+  const [editWhatsappDeclineMessage, setEditWhatsappDeclineMessage] = useState('');
+  const [musicFile, setMusicFile] = useState<File | null>(null);
+  const [musicFileName, setMusicFileName] = useState<string | null>(null);
 
   const [originUrl, setOriginUrl] = useState('');
 
@@ -240,6 +249,11 @@ export default function DashboardPage() {
         setEditHeroImageUrl(activeEvent.hero_image_url || '');
         setHeroFile(null);
         setHeroPreview(null);
+        setEditWhatsappPhone(activeEvent.whatsapp_phone || '573015181018');
+        setEditWhatsappConfirmMessage(activeEvent.whatsapp_confirm_message || '');
+        setEditWhatsappDeclineMessage(activeEvent.whatsapp_decline_message || '');
+        setMusicFile(null);
+        setMusicFileName(null);
         setEditColorPrimary(activeEvent.theme_colors?.primary || '#4a2a6b');
         setEditColorSecondary(activeEvent.theme_colors?.secondary || '#9964c4');
         setEditColorAccent(activeEvent.theme_colors?.accent || '#bf8ce0');
@@ -447,6 +461,28 @@ export default function DashboardPage() {
         finalHeroImageUrl = publicUrl;
       }
 
+      let finalBackgroundMusicUrl = editBackgroundMusicUrl;
+
+      if (musicFile) {
+        const fileExt = musicFile.name.split('.').pop();
+        const fileName = `${event.id}/music-${Date.now()}.${fileExt}`;
+
+        const { data: uploadData, error: uploadErr } = await supabase.storage
+          .from('event-images')
+          .upload(fileName, musicFile, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('event-images')
+          .getPublicUrl(fileName);
+
+        finalBackgroundMusicUrl = publicUrl;
+      }
+
       const { data, error } = await supabase
         .from('events')
         .update({
@@ -455,9 +491,12 @@ export default function DashboardPage() {
           location_name: editLocationName,
           location_address: editLocationAddress,
           location_map_url: editLocationMapUrl || null,
-          background_music_url: editBackgroundMusicUrl || null,
+          background_music_url: finalBackgroundMusicUrl || null,
           photos_folder_url: editPhotosFolderUrl || null,
           hero_image_url: finalHeroImageUrl || null,
+          whatsapp_phone: editWhatsappPhone || null,
+          whatsapp_confirm_message: editWhatsappConfirmMessage || null,
+          whatsapp_decline_message: editWhatsappDeclineMessage || null,
           theme_colors: {
             primary: editColorPrimary,
             secondary: editColorSecondary,
@@ -475,6 +514,12 @@ export default function DashboardPage() {
       setEditHeroImageUrl(data.hero_image_url || '');
       setHeroFile(null);
       setHeroPreview(null);
+      setEditBackgroundMusicUrl(data.background_music_url || '');
+      setMusicFile(null);
+      setMusicFileName(null);
+      setEditWhatsappPhone(data.whatsapp_phone || '573015181018');
+      setEditWhatsappConfirmMessage(data.whatsapp_confirm_message || '');
+      setEditWhatsappDeclineMessage(data.whatsapp_decline_message || '');
       setEditingEvent(false);
     } catch (err) {
       console.error('Error updating event:', err);
@@ -807,14 +852,60 @@ export default function DashboardPage() {
                       className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Música (URL MP3)</label>
-                    <input type="url" value={editBackgroundMusicUrl} onChange={(e) => setEditBackgroundMusicUrl(e.target.value)} placeholder="https://servidor.com/musica.mp3"
-                      className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Música de Fondo (MP3)</label>
+                    <div className="flex flex-col gap-2">
+                      <input type="url" value={editBackgroundMusicUrl} onChange={(e) => setEditBackgroundMusicUrl(e.target.value)} placeholder="URL del MP3 o sube uno..."
+                        className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                      <div className="flex items-center gap-2">
+                        <label className="shrink-0 bg-slate-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold uppercase px-3 py-1.5 rounded-lg cursor-pointer text-zinc-655 dark:text-zinc-300 transition active:scale-95">
+                          Subir MP3
+                          <input
+                            type="file"
+                            accept="audio/mp3,audio/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setMusicFile(file);
+                                setMusicFileName(file.name);
+                              }
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                        <span className="text-[10px] text-zinc-450 dark:text-zinc-500 truncate max-w-[200px]">
+                          {musicFileName || (editBackgroundMusicUrl ? '✓ Canción activa enlazada' : 'Ningún archivo seleccionado')}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Galería de Fotos</label>
                     <input type="url" value={editPhotosFolderUrl} onChange={(e) => setEditPhotosFolderUrl(e.target.value)} placeholder="https://drive.google.com/..."
                       className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                  </div>
+
+                  <div className="sm:col-span-2 border-t border-slate-100 dark:border-white/5 pt-4 flex flex-col gap-3">
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">Confirmación por WhatsApp</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Número de WhatsApp (con código de país sin +)</label>
+                        <input type="text" value={editWhatsappPhone} onChange={(e) => setEditWhatsappPhone(e.target.value)} placeholder="Ej: 573015181018"
+                          className="w-full text-sm h-10 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 px-4 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none" />
+                      </div>
+                      <div className="hidden sm:block"></div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Mensaje para Asistiré (WhatsApp)</label>
+                        <textarea value={editWhatsappConfirmMessage} onChange={(e) => setEditWhatsappConfirmMessage(e.target.value)} rows={3} placeholder="Mensaje predeterminado de confirmación..."
+                          className="w-full text-xs p-3 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none" />
+                        <p className="text-[9px] text-zinc-400">Puedes usar: {"{nombre_anfitrion}"}, {"{nombre_invitado}"}, {"{cupos}"}</p>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Mensaje para No Asistiré (WhatsApp)</label>
+                        <textarea value={editWhatsappDeclineMessage} onChange={(e) => setEditWhatsappDeclineMessage(e.target.value)} rows={3} placeholder="Mensaje predeterminado de inasistencia..."
+                          className="w-full text-xs p-3 rounded-xl border-0 bg-slate-50 dark:bg-zinc-950 text-zinc-950 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 focus:ring-2 focus:ring-violet-500 focus:outline-none resize-none" />
+                        <p className="text-[9px] text-zinc-400">Puedes usar: {"{nombre_anfitrion}"}, {"{nombre_invitado}"}</p>
+                      </div>
+                    </div>
                   </div>
                   <div className="sm:col-span-2 flex flex-col gap-1.5">
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Foto de Portada (Invitación)</label>

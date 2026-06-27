@@ -919,13 +919,13 @@ export default function GuestInvitationView({ guest }: GuestInvitationViewProps)
           <div className="relative mx-auto max-w-xl text-center px-6">
             <GoldDivider />
             
-            <p className="font-script text-5xl text-primary mt-6 mb-8">Te espero</p>
+            <p className="font-script text-5xl text-primary" style={{ marginTop: '30px', marginBottom: '24px' }}>Te espero</p>
 
-            <p className="text-[11px] font-display uppercase tracking-[0.45em] text-primary/70 font-semibold">
+            <p className="text-[11px] font-display uppercase tracking-[0.45em] text-primary/70 font-semibold" style={{ marginBottom: '18px' }}>
               {event.host_name} · XV AÑOS
             </p>
 
-            <p className="text-xs font-serif italic text-muted-foreground mt-4">
+            <p className="text-xs font-serif italic text-muted-foreground" style={{ marginTop: '18px' }}>
               {event.event_date ? event.event_date.split('T')[0].split('-').reverse().join(' - ') : ''}
             </p>
           </div>

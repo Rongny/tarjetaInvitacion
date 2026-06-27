@@ -2,8 +2,25 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tarjeta-invitacion-weld.vercel.app'),
   title: "Lacre - Invitaciones Premium",
   description: "Crea experiencias digitales únicas e inalterables",
+  openGraph: {
+    title: "Lacre - Invitaciones Premium",
+    description: "Crea experiencias digitales únicas e inalterables",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Lacre Logo",
+      }
+    ],
+  },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  }
 };
 
 export default function RootLayout({
